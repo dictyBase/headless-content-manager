@@ -63,14 +63,14 @@ const extractContent = async (
 const curriedBlockToElements =
   (document: Document) => (node: blockProperties) => {
     const nodeType = node.type
-    if (nodeType == "lineSpacing") {
-      return
-    }
-    if (!BLOCK_TYPES[nodeType]) {
-      console.log(node.type, " not found")
+    if (!(nodeType in BLOCK_TYPES)) {
+      console.log("unable to process %s type", nodeType)
       return
     }
     const element = BLOCK_TYPES[nodeType](document)
+    if (nodeType == "lineSpacing") {
+      return
+    }
     if (nodeType == "divider") {
       return element
     }
