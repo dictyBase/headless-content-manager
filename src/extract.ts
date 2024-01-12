@@ -28,12 +28,14 @@ type blockFn = (
   | HTMLOListElement
   | HTMLLIElement
   | HTMLDivElement
+  | HTMLHRElement
 
 type blockTypeProperties = Record<string, blockFn>
 
 type blockProperties = LeafElementProperties | ElementProperties
 
 const BLOCK_TYPES: blockTypeProperties = {
+  divider: (document: Document) => document.createElement("hr"),
   div: (document: Document) => document.createElement("div"),
   h1: (document: Document) => document.createElement("h1"),
   h2: (document: Document) => document.createElement("h2"),
@@ -54,11 +56,15 @@ const extractContent = async (
 
 const curriedBlockToElements =
   (document: Document) => (node: blockProperties) => {
-    if (!BLOCK_TYPES[node.type]) {
-      console.warn(node.type, " not found")
+    const nodeType = node.type
+    if (!BLOCK_TYPES[nodeType]) {
+      console.log(node.type, " not found")
       return
     }
-    const element = BLOCK_TYPES[node.type](document)
+    const element = BLOCK_TYPES[nodeType](document)
+    if (nodeType == "divider") {
+      return element
+    }
     const children = node.children
     if ("type" in children[0]) {
       node.children.forEach((n) => {
