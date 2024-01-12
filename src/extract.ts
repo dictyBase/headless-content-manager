@@ -70,7 +70,7 @@ const curriedBlockToElements =
       console.log(node.type, " not found")
       return
     }
-    let element = BLOCK_TYPES[nodeType](document)
+    const element = BLOCK_TYPES[nodeType](document)
     if (nodeType == "divider") {
       return element
     }
@@ -79,27 +79,35 @@ const curriedBlockToElements =
       newElement.src = (node as LeafElementProperties).url as string
       return newElement
     }
-    const children = node.children
-    if ("type" in children[0]) {
-      node.children.forEach((n) => {
-        if (n) {
-          const nextElement = curriedBlockToElements(document)(
-            n as blockProperties,
-          )
-          if (nextElement) {
-            element.appendChild(nextElement)
-          }
+    if (nodeType == "link") {
+      const newElement = element as HTMLAnchorElement
+      newElement.href = (node as LeafElementProperties).url as string
+      newElement.textContent = (node.children[0] as ChildrenProperties).text
+      return newElement
+    }
+
+    node.children.forEach((childNode) => {
+      if ("type" in childNode) {
+        const nextElement = curriedBlockToElements(document)(
+          childNode as blockProperties,
+        )
+        if (nextElement) {
+          element.appendChild(nextElement)
         }
-      })
-      return element
-    }
-    const texts = node.children
-      .map((n) => extractNodeContent(n as ChildrenProperties))
-      .join(" ")
-    if (texts.length == 0) {
-      return
-    }
-    element.insertAdjacentHTML("afterbegin", texts)
+        return element
+      }
+      const textContent = extractNodeContent(childNode as ChildrenProperties)
+      if (textContent) {
+        if (element.textContent) {
+          element.insertAdjacentHTML(
+            "afterbegin",
+            element.textContent.concat(" ").concat(textContent),
+          )
+        } else {
+          element.insertAdjacentHTML("afterbegin", textContent)
+        }
+      }
+    })
     return element
   }
 
