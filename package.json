@@ -1,0 +1,31 @@
+{
+  "name": "editable-content",
+  "module": "index.ts",
+  "type": "module",
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/jsdom": "^21.1.6",
+    "prettier": "^3.1.1"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "@lexical/headless": "0.11",
+    "@lexical/html": "0.11",
+    "@lexical/link": "0.11",
+    "@lexical/list": "0.11",
+    "@lexical/rich-text": "0.11",
+    "commander": "^11.1.0",
+    "fp-ts": "^2.16.2",
+    "fp-ts-std": "^0.18.0",
+    "jsdom": "^23.2.0",
+    "lexical": "0.11",
+    "ts-pattern": "^5.0.6"
+  },
+  "prettier": {
+    "semi": false,
+    "trailingComma": "all",
+    "bracketSameLine": true
+  }
+}
