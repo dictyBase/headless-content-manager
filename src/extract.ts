@@ -76,6 +76,9 @@ const curriedBlockToElements =
     const texts = node.children
       .map((n) => extractNodeContent(n as ChildrenProperties))
       .join(" ")
+    if (texts.length == 0) {
+      return
+    }
     element.insertAdjacentHTML("afterbegin", texts)
     return element
   }
