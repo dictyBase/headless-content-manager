@@ -70,11 +70,17 @@ const curriedBlockToElements =
       console.log(node.type, " not found")
       return
     }
-    const element = BLOCK_TYPES[nodeType](document)
+    let element = BLOCK_TYPES[nodeType](document)
     if (nodeType == "divider") {
       return element
     }
     if (nodeType == "image") {
+      const leafnode = node as LeafElementProperties
+      if (leafnode.url) {
+        const newElement = element as HTMLImageElement
+        newElement.src = leafnode.url
+        return newElement
+      }
     }
     const children = node.children
     if ("type" in children[0]) {
