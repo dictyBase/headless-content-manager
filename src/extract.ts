@@ -75,12 +75,9 @@ const curriedBlockToElements =
       return element
     }
     if (nodeType == "image") {
-      const leafnode = node as LeafElementProperties
-      if (leafnode.url) {
-        const newElement = element as HTMLImageElement
-        newElement.src = leafnode.url
-        return newElement
-      }
+      const newElement = element as HTMLImageElement
+      newElement.src = (node as LeafElementProperties).url as string
+      return newElement
     }
     const children = node.children
     if ("type" in children[0]) {
