@@ -11,6 +11,7 @@ type ChildrenProperties = {
 type LeafElementProperties = {
   type: string
   children: Array<ChildrenProperties>
+  url?: string
 }
 
 type ElementProperties = {
@@ -29,6 +30,8 @@ type blockFn = (
   | HTMLLIElement
   | HTMLDivElement
   | HTMLHRElement
+  | HTMLImageElement
+  | HTMLAnchorElement
 
 type blockTypeProperties = Record<string, blockFn>
 
@@ -46,6 +49,8 @@ const BLOCK_TYPES: blockTypeProperties = {
   unorderedList: (document: Document) => document.createElement("ul"),
   orderedList: (document: Document) => document.createElement("ol"),
   listItem: (document: Document) => document.createElement("li"),
+  image: (document: Document) => document.createElement("img"),
+  link: (document: Document) => document.createElement("a"),
 }
 
 const extractContent = async (
@@ -68,6 +73,8 @@ const curriedBlockToElements =
     const element = BLOCK_TYPES[nodeType](document)
     if (nodeType == "divider") {
       return element
+    }
+    if (nodeType == "image") {
     }
     const children = node.children
     if ("type" in children[0]) {
