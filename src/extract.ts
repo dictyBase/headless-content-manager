@@ -49,8 +49,7 @@ const extractContent = async (
   file: string,
 ): Promise<Array<ElementProperties>> => {
   const fh = Bun.file(file)
-  const dataObj = await fh.json()
-  return JSON.parse(dataObj)
+  return await fh.json()
 }
 
 const curriedBlockToElements =
