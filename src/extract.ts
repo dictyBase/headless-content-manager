@@ -42,6 +42,7 @@ const BLOCK_TYPES: blockTypeProperties = {
   h3: (document: Document) => document.createElement("h3"),
   h4: (document: Document) => document.createElement("h4"),
   paragraph: (document: Document) => document.createElement("p"),
+  center: (document: Document) => document.createElement("p"),
   unorderedList: (document: Document) => document.createElement("ul"),
   orderedList: (document: Document) => document.createElement("ol"),
   listItem: (document: Document) => document.createElement("li"),
