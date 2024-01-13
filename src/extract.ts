@@ -22,9 +22,7 @@ type ElementProperties = {
   align?: string
 }
 
-type blockFn = (
-  document: Document,
-) =>
+type ElementTypeProperties =
   | HTMLHeadingElement
   | HTMLParagraphElement
   | HTMLUListElement
@@ -34,6 +32,8 @@ type blockFn = (
   | HTMLHRElement
   | HTMLImageElement
   | HTMLAnchorElement
+
+type blockFn = (document: Document) => ElementTypeProperties
 
 type blockTypeProperties = Record<string, blockFn>
 
