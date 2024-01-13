@@ -83,41 +83,37 @@ const curriedBlockToElements =
           element as HTMLAnchorElement,
         ),
       )
-      .otherwise(() => {
-        node.children.forEach((childNode) => {
-          if ("type" in childNode) {
-            const nextElement = curriedBlockToElements(document)(
-              childNode as blockProperties,
-            )
-            if (nextElement) {
-              element.appendChild(nextElement)
-            }
-            return element
-          }
-          const textContent = extractNodeContent(
-            childNode as ChildrenProperties,
-          )
-          if (textContent) {
-            if (element.textContent) {
-              element.insertAdjacentHTML(
-                "afterbegin",
-                element.textContent.concat(" ").concat(textContent),
-              )
-            } else {
-              element.insertAdjacentHTML("afterbegin", textContent)
-            }
-          }
-        })
-        return element
-      })
+      .otherwise(() => allOtherElements(document, node, element))
+    return element
   }
 
-const anchorElement = (
-  node: LeafElementProperties,
-  element: HTMLAnchorElement,
+const allOtherElements = (
+  document: Document,
+  node: blockProperties,
+  element: ElementTypeProperties,
 ) => {
-  element.href = node.children[0].text
-  return element
+  node.children.forEach((childNode) => {
+    if ("type" in childNode) {
+      const nextElement = curriedBlockToElements(document)(
+        childNode as blockProperties,
+      )
+      if (nextElement) {
+        element.appendChild(nextElement)
+      }
+    } else {
+      const textContent = extractNodeContent(childNode as ChildrenProperties)
+      if (textContent) {
+        if (element.textContent) {
+          element.insertAdjacentHTML(
+            "afterbegin",
+            element.textContent.concat(" ").concat(textContent),
+          )
+        } else {
+          element.insertAdjacentHTML("afterbegin", textContent)
+        }
+      }
+    }
+  })
 }
 
 const anchorElement = (
