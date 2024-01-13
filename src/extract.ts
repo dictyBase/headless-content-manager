@@ -66,14 +66,10 @@ const curriedBlockToElements =
   (document: Document) => (node: blockProperties) => {
     const nodeType = node.type
     if (!(nodeType in BLOCK_TYPES)) {
-      console.log("unable to process %s type", nodeType)
       return
     }
     const element = BLOCK_TYPES[nodeType](document)
-    return match(nodeType)
-      .with("lineSpacing", () => {
-        return
-      })
+    match(nodeType)
       .with("divider", () => element)
       .with("image", () =>
         imageElement(
