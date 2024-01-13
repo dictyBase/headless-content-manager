@@ -120,13 +120,13 @@ const anchorElement = (
   return element
 }
 
-const imageElement = (
+const anchorElement = (
   node: LeafElementProperties,
-  element: HTMLImageElement,
-) => {
-  element.src = node.url as string
-  return element
-}
+  element: HTMLAnchorElement,
+) => (element.href = node.children[0].text)
+
+const imageElement = (node: LeafElementProperties, element: HTMLImageElement) =>
+  (element.src = node.url as string)
 
 const extractNodeContent = (node: ChildrenProperties) => {
   if (!node.text) {
