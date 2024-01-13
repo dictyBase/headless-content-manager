@@ -124,12 +124,6 @@ const anchorElement = (
 const imageElement = (node: LeafElementProperties, element: HTMLImageElement) =>
   (element.src = node.url as string)
 
-const extractNodeContent = (node: ChildrenProperties) => {
-  if (!node.text) {
-    return
-  }
-  const content = node.text
-  return content
-}
+const extractNodeContent = (node: ChildrenProperties) => node.text
 
 export { extractContent, curriedBlockToElements }
