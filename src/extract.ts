@@ -1,3 +1,5 @@
+import { match } from "ts-pattern"
+
 type ChildrenProperties = {
   text: string
   fontColor: string
@@ -68,48 +70,67 @@ const curriedBlockToElements =
       return
     }
     const element = BLOCK_TYPES[nodeType](document)
-    if (nodeType == "lineSpacing") {
-      return
-    }
-    if (nodeType == "divider") {
-      return element
-    }
-    if (nodeType == "image") {
-      const newElement = element as HTMLImageElement
-      newElement.src = (node as LeafElementProperties).url as string
-      return newElement
-    }
-    if (nodeType == "link") {
-      const newElement = element as HTMLAnchorElement
-      newElement.href = (node as LeafElementProperties).url as string
-      newElement.textContent = (node.children[0] as ChildrenProperties).text
-      return newElement
-    }
-
-    node.children.forEach((childNode) => {
-      if ("type" in childNode) {
-        const nextElement = curriedBlockToElements(document)(
-          childNode as blockProperties,
-        )
-        if (nextElement) {
-          element.appendChild(nextElement)
-        }
-        return element
-      }
-      const textContent = extractNodeContent(childNode as ChildrenProperties)
-      if (textContent) {
-        if (element.textContent) {
-          element.insertAdjacentHTML(
-            "afterbegin",
-            element.textContent.concat(" ").concat(textContent),
+    return match(nodeType)
+      .with("lineSpacing", () => {
+        return
+      })
+      .with("divider", () => element)
+      .with("image", () =>
+        imageElement(
+          node as LeafElementProperties,
+          element as HTMLImageElement,
+        ),
+      )
+      .with("link", () =>
+        anchorElement(
+          node as LeafElementProperties,
+          element as HTMLAnchorElement,
+        ),
+      )
+      .otherwise(() => {
+        node.children.forEach((childNode) => {
+          if ("type" in childNode) {
+            const nextElement = curriedBlockToElements(document)(
+              childNode as blockProperties,
+            )
+            if (nextElement) {
+              element.appendChild(nextElement)
+            }
+            return element
+          }
+          const textContent = extractNodeContent(
+            childNode as ChildrenProperties,
           )
-        } else {
-          element.insertAdjacentHTML("afterbegin", textContent)
-        }
-      }
-    })
-    return element
+          if (textContent) {
+            if (element.textContent) {
+              element.insertAdjacentHTML(
+                "afterbegin",
+                element.textContent.concat(" ").concat(textContent),
+              )
+            } else {
+              element.insertAdjacentHTML("afterbegin", textContent)
+            }
+          }
+        })
+        return element
+      })
   }
+
+const anchorElement = (
+  node: LeafElementProperties,
+  element: HTMLAnchorElement,
+) => {
+  element.href = node.children[0].text
+  return element
+}
+
+const imageElement = (
+  node: LeafElementProperties,
+  element: HTMLImageElement,
+) => {
+  element.src = node.url as string
+  return element
+}
 
 const extractNodeContent = (node: ChildrenProperties) => {
   if (!node.text) {
