@@ -123,9 +123,8 @@ const processRecursiveChildNode = (
 const processChildNode = (
   node: ChildrenProperties,
   element: ElementTypeProperties,
-) => {
-  const textContent = extractNodeContent(node)
-  match(textContent)
+) =>
+  match(extractNodeContent(node))
     .with(P.nullish, (textContent) =>
       element.insertAdjacentHTML("afterbegin", textContent),
     )
@@ -135,7 +134,6 @@ const processChildNode = (
         `${element.textContent} ${textContent}`,
       ),
     )
-}
 
 const anchorElement = (
   node: LeafElementProperties,
