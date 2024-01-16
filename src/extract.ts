@@ -23,6 +23,7 @@ type ElementProperties = {
 }
 
 type blockProperties = LeafElementProperties | ElementProperties
+
 type ElementTypeProperties =
   | HTMLHeadingElement
   | HTMLParagraphElement
@@ -69,25 +70,28 @@ const elementFromType = (document: Document, nodeType: string) =>
 const curriedBlockToElements =
   (document: Document) => (node: blockProperties) => {
     const nodeType = node.type
-    if (!(nodeType in BLOCK_TYPES)) {
-      return
-    }
-    const element = BLOCK_TYPES[nodeType](document)
-    match(nodeType)
-      .with("divider", () => element)
-      .with("image", () =>
+    const element = elementFromType(document, nodeType)
+    match({
+      nodeType,
+      element,
+      node,
+    })
+      .with({ nodeType: "divider" }, ({ element }) => element)
+      .with({ nodeType: "image" }, ({ node, element }) =>
         imageElement(
           node as LeafElementProperties,
           element as HTMLImageElement,
         ),
       )
-      .with("link", () =>
+      .with({ nodeType: "link" }, ({ node, element }) =>
         anchorElement(
           node as LeafElementProperties,
           element as HTMLAnchorElement,
         ),
       )
-      .otherwise(() => allOtherElements(document, node, element))
+      .with({ element: P.not(P.nullish) }, ({ node, element }) =>
+        allOtherElements(document, node, element),
+      )
     return element
   }
 
@@ -97,27 +101,43 @@ const allOtherElements = (
   element: ElementTypeProperties,
 ) => {
   node.children.forEach((childNode) => {
-    if ("type" in childNode) {
-      const nextElement = curriedBlockToElements(document)(
-        childNode as blockProperties,
+    match(childNode)
+      .when(
+        (childNode) => "type" in childNode,
+        (childNode) => processRecursiveChildNode(document, childNode, element),
       )
-      if (nextElement) {
-        element.appendChild(nextElement)
-      }
-    } else {
-      const textContent = extractNodeContent(childNode as ChildrenProperties)
-      if (textContent) {
-        if (element.textContent) {
-          element.insertAdjacentHTML(
-            "afterbegin",
-            element.textContent.concat(" ").concat(textContent),
-          )
-        } else {
-          element.insertAdjacentHTML("afterbegin", textContent)
-        }
-      }
-    }
+      .otherwise((childNode) =>
+        processChildNode(childNode as ChildrenProperties, element),
+      )
   })
+}
+
+const processRecursiveChildNode = (
+  document: Document,
+  node: LeafElementProperties | ChildrenProperties,
+  element: ElementTypeProperties,
+) => {
+  const nextElement = curriedBlockToElements(document)(node as blockProperties)
+  match(nextElement)
+    .with(P.not(P.nullish), (nextElement) => element.appendChild(nextElement))
+    .otherwise(() => {})
+}
+
+const processChildNode = (
+  node: ChildrenProperties,
+  element: ElementTypeProperties,
+) => {
+  const textContent = extractNodeContent(node)
+  match(textContent)
+    .with(P.nullish, (textContent) =>
+      element.insertAdjacentHTML("afterbegin", textContent),
+    )
+    .otherwise((textContent) =>
+      element.insertAdjacentHTML(
+        "afterbegin",
+        `${element.textContent} ${textContent}`,
+      ),
+    )
 }
 
 const anchorElement = (
