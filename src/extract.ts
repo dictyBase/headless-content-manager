@@ -1,43 +1,12 @@
 import { match, P } from "ts-pattern"
-
-type ChildrenProperties = {
-  text: string
-  fontColor: string
-  fontSize: string
-  fontFamily: string
-  bold?: boolean
-  italic?: boolean
-  link?: boolean
-}
-
-type LeafElementProperties = {
-  type: string
-  children: Array<ChildrenProperties>
-  url?: string
-}
-
-type ElementProperties = {
-  type: string
-  children: Array<LeafElementProperties>
-  align?: string
-}
-
-type blockProperties = LeafElementProperties | ElementProperties
-
-type ElementTypeProperties =
-  | HTMLHeadingElement
-  | HTMLParagraphElement
-  | HTMLUListElement
-  | HTMLOListElement
-  | HTMLLIElement
-  | HTMLDivElement
-  | HTMLHRElement
-  | HTMLImageElement
-  | HTMLAnchorElement
-
-type blockFn = (document: Document) => ElementTypeProperties
-
-type blockTypeProperties = Record<string, blockFn>
+import type {
+  ChildrenProperties,
+  LeafElementProperties,
+  ElementTypeProperties,
+  blockProperties,
+  blockTypeProperties,
+  ElementProperties,
+} from "./types"
 
 const BLOCK_TYPES: blockTypeProperties = {
   divider: (document: Document) => document.createElement("hr"),
