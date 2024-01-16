@@ -24,7 +24,7 @@ import { HeadingNode } from "@lexical/rich-text"
 	5. The synchronization is performed within an `editor.update()` call
 	with the option `{ discrete: true }`.
  */
-const syncEditor = (editor: LexicalEditor) => (document: Document) => {
+const syncEditor = (document: Document, editor: LexicalEditor) => {
   editor.update(
     () => {
       // Generate nodes from the DOM
