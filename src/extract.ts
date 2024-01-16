@@ -68,32 +68,29 @@ const elementFromType = (document: Document, nodeType: string) =>
     .otherwise(() => null)
 
 const curriedBlockToElements =
-  (document: Document) => (node: blockProperties) => {
-    const nodeType = node.type
-    const element = elementFromType(document, nodeType)
+  (document: Document) => (node: blockProperties) =>
     match({
-      nodeType,
-      element,
+      nodeType: node.type,
+      element: elementFromType(document, node.type),
       node,
     })
       .with({ nodeType: "divider" }, ({ element }) => element)
-      .with({ nodeType: "image" }, ({ node, element }) =>
-        imageElement(
-          node as LeafElementProperties,
-          element as HTMLImageElement,
-        ),
-      )
-      .with({ nodeType: "link" }, ({ node, element }) =>
+      .with({ nodeType: "image" }, ({ node, element }) => {
+        imageElement(node as LeafElementProperties, element as HTMLImageElement)
+        return element
+      })
+      .with({ nodeType: "link" }, ({ node, element }) => {
         anchorElement(
           node as LeafElementProperties,
           element as HTMLAnchorElement,
-        ),
-      )
-      .with({ element: P.not(P.nullish) }, ({ node, element }) =>
-        allOtherElements(document, node, element),
-      )
-    return element
-  }
+        )
+        return element
+      })
+      .with({ element: P.not(P.nullish) }, ({ node, element }) => {
+        allOtherElements(document, node, element)
+        return element
+      })
+      .otherwise(({ element }) => element)
 
 const allOtherElements = (
   document: Document,
