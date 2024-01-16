@@ -4,16 +4,10 @@ import { map as Amap } from "fp-ts/Array"
 import { extractContent, curriedBlockToElements } from "./extract"
 import { syncEditor, editorInstance } from "./editor"
 
-type ElementProperties =
-  | HTMLLIElement
-  | HTMLHeadingElement
-  | HTMLUListElement
-  | HTMLParagraphElement
-  | HTMLDivElement
-  | undefined
+import { type ElementTypeProperties } from "./types"
 
 const curriedAddBlockElement =
-  (document: Document) => (elem: ElementProperties) =>
+  (document: Document) => (elem: ElementTypeProperties | null) =>
     elem && document.body.appendChild(elem)
 
 const slateToLexical = async (input: string) => {
