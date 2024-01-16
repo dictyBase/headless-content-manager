@@ -22,13 +22,17 @@ const BLOCK_TYPES: blockTypeProperties = {
   link: (document: Document) => document.createElement("a"),
 }
 
+/**
+ * Returns an element from the given document based on the provided node type.
+ */
 const elementFromType = (document: Document, nodeType: string) =>
   match(nodeType in BLOCK_TYPES)
     .with(true, () => BLOCK_TYPES[nodeType](document))
     .otherwise(() => null)
 
-
-
+/**
+ * This function processes a child node and inserts its content into an element.
+ */
 const processChildNode = (
   node: ChildrenProperties,
   element: ElementTypeProperties,
@@ -44,19 +48,25 @@ const processChildNode = (
       ),
     )
 
+/**
+ * Sets the href property of an HTMLAnchorElement using the text of the first
+ * child of a LeafElementProperties node.
+ *
+ */
 const anchorElement = (
   node: LeafElementProperties,
   element: HTMLAnchorElement,
 ) => (element.href = node.children[0].text)
 
+/**
+ * Sets the src property of an HTMLImageElement to the URL specified in the node.
+ */
 const imageElement = (node: LeafElementProperties, element: HTMLImageElement) =>
   (element.src = node.url as string)
 
+/**
+ * Extracts the content of a node.
+ */
 const extractNodeContent = (node: ChildrenProperties) => node.text
 
-export {
-  imageElement,
-  anchorElement,
-  elementFromType,
-  processChildNode,
-}
+export { imageElement, anchorElement, elementFromType, processChildNode }
