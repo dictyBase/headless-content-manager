@@ -1,4 +1,4 @@
-import { match } from "ts-pattern"
+import { match, P } from "ts-pattern"
 
 type ChildrenProperties = {
   text: string
@@ -22,6 +22,7 @@ type ElementProperties = {
   align?: string
 }
 
+type blockProperties = LeafElementProperties | ElementProperties
 type ElementTypeProperties =
   | HTMLHeadingElement
   | HTMLParagraphElement
@@ -36,8 +37,6 @@ type ElementTypeProperties =
 type blockFn = (document: Document) => ElementTypeProperties
 
 type blockTypeProperties = Record<string, blockFn>
-
-type blockProperties = LeafElementProperties | ElementProperties
 
 const BLOCK_TYPES: blockTypeProperties = {
   divider: (document: Document) => document.createElement("hr"),
@@ -61,6 +60,11 @@ const extractContent = async (
   const fh = Bun.file(file)
   return await fh.json()
 }
+
+const elementFromType = (document: Document, nodeType: string) =>
+  match(nodeType in BLOCK_TYPES)
+    .with(true, () => BLOCK_TYPES[nodeType](document))
+    .otherwise(() => null)
 
 const curriedBlockToElements =
   (document: Document) => (node: blockProperties) => {
