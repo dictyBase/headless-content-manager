@@ -3,7 +3,6 @@ import { JSDOM } from "jsdom"
 import { map as Amap } from "fp-ts/Array"
 import { extractContent, curriedBlockToElements } from "./extract"
 import { syncEditor, editorInstance } from "./editor"
-
 import { type ElementTypeProperties } from "./types"
 
 const curriedAddBlockElement =
@@ -21,7 +20,7 @@ const slateToLexical = async (input: string) => {
     Amap(blockNodesToElements),
     Amap(addBlockElement),
   )
-  syncEditor(contEditor)(document)
+  syncEditor(document, contEditor)
   return JSON.stringify(contEditor.getEditorState(), null, 2)
 }
 
