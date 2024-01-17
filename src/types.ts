@@ -1,5 +1,5 @@
 type ChildrenProperties = {
-  text: string
+  text: string | null
   fontColor: string
   fontSize: string
   fontFamily: string
