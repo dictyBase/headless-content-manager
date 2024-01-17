@@ -67,6 +67,10 @@ const imageElement = (node: LeafElementProperties, element: HTMLImageElement) =>
 /**
  * Extracts the content of a node.
  */
-const extractNodeContent = (node: ChildrenProperties) => node.text
+const extractNodeContent = (node: ChildrenProperties) =>
+  node.text ? node.text : null
+
+const extractElementContent = (elem: HTMLElement) =>
+  elem.textContent ? elem.textContent : null
 
 export { imageElement, anchorElement, elementFromType, processChildNode }
