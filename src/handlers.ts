@@ -56,7 +56,10 @@ const processChildNode = (
 const anchorElement = (
   node: LeafElementProperties,
   element: HTMLAnchorElement,
-) => (element.href = node.children[0].text)
+) => {
+  const content = node.children.at(0)?.text
+  content && (element.href = content)
+}
 
 /**
  * Sets the src property of an HTMLImageElement to the URL specified in the node.
