@@ -12,6 +12,7 @@ import {
   anchorElement,
   elementFromType,
   processChildNode,
+  elementWithContent,
 } from "./handlers"
 
 /**
@@ -41,23 +42,23 @@ const curriedBlockToElements =
       // "node" and "element" as arguments, and return the "element".
       .with({ nodeType: "image" }, ({ node, element }) => {
         imageElement(node as LeafElementProperties, element as HTMLImageElement)
-        return element
+        return elementWithContent(element as ElementTypeProperties)
       })
       // If the nodeType is "link", call the "anchorElement" function with the
-	// "node" and "element" as arguments, and return the "element".
+      // "node" and "element" as arguments, and return the "element".
       .with({ nodeType: "link" }, ({ node, element }) => {
         anchorElement(
           node as LeafElementProperties,
           element as HTMLAnchorElement,
         )
-        return element
+        return elementWithContent(element as ElementTypeProperties)
       })
       // If the "element" is not null or undefined, call the "allOtherElements"
-	// function with the "document", "node", and "element" as arguments,
-	// and return the "element".
+      // function with the "document", "node", and "element" as arguments,
+      // and return the "element".
       .with({ element: P.not(P.nullish) }, ({ node, element }) => {
         allOtherElements(document, node, element)
-        return element
+        return elementWithContent(element)
       })
       // For any other case, return the "element" directly.
       .otherwise(({ element }) => element)
@@ -101,9 +102,9 @@ const allOtherElements = (
         (childNode) => "type" in childNode,
         (childNode) => processRecursiveChildNode(document, childNode, element),
       )
-      .otherwise((childNode) =>
-        processChildNode(childNode as ChildrenProperties, element),
-      )
+      .otherwise((childNode) => {
+        processChildNode(childNode as ChildrenProperties, element)
+      })
   })
 }
 
