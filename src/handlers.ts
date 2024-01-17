@@ -77,4 +77,13 @@ const extractNodeContent = (node: ChildrenProperties) =>
 const extractElementContent = (elem: HTMLElement) =>
   elem.textContent ? elem.textContent : null
 
-export { imageElement, anchorElement, elementFromType, processChildNode }
+const elementWithContent = (elem: ElementTypeProperties) =>
+  elem.textContent ? elem : null
+
+export {
+  imageElement,
+  anchorElement,
+  elementFromType,
+  processChildNode,
+  elementWithContent,
+}
