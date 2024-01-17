@@ -38,15 +38,16 @@ const processChildNode = (
   element: ElementTypeProperties,
 ) =>
   match(extractNodeContent(node))
-    .with(P.nullish, (textContent) =>
-      element.insertAdjacentHTML("afterbegin", textContent),
-    )
-    .otherwise((textContent) =>
-      element.insertAdjacentHTML(
-        "afterbegin",
-        `${element.textContent} ${textContent}`,
-      ),
-    )
+    .with(P.not(P.nullish), (textContent) => {
+      match(extractElementContent(element))
+        .with(P.not(P.nullish), (elementContent) => {
+          element.textContent = `${elementContent} ${textContent}`
+        })
+        .otherwise(() => {
+          element.insertAdjacentHTML("afterbegin", textContent)
+        })
+    })
+    .otherwise(() => {})
 
 /**
  * Sets the href property of an HTMLAnchorElement using the text of the first
