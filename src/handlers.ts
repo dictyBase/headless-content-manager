@@ -83,6 +83,9 @@ const extractNodeContent = (node: ChildrenProperties) =>
 const elementWithContent = (elem: ElementTypeProperties) =>
   elem.textContent ? elem : null
 
+/**
+ * Processes the text content by removing all newline characters.
+ */
 const processTextContent = (content: string) => content.replace(newlineRgxp, "")
 
 /**
