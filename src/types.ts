@@ -38,6 +38,13 @@ type blockFn = (document: Document) => ElementTypeProperties
 
 type blockTypeProperties = Record<string, blockFn>
 
+type handleBoldAndItalicProperties = {
+  document: Document
+  node: ChildrenProperties
+  element: ElementTypeProperties
+  textContent: string
+}
+
 export type {
   ChildrenProperties,
   LeafElementProperties,
@@ -45,4 +52,5 @@ export type {
   blockProperties,
   blockTypeProperties,
   ElementProperties,
+  handleBoldAndItalicProperties,
 }
