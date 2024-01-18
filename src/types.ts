@@ -32,6 +32,7 @@ type ElementTypeProperties =
   | HTMLHRElement
   | HTMLImageElement
   | HTMLAnchorElement
+  | HTMLBRElement
 
 type blockFn = (document: Document) => ElementTypeProperties
 
