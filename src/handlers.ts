@@ -124,6 +124,16 @@ const setBoldAndItalic = ({
         document.createTextNode(processTextContent(textContent)),
       )
     })
+
+const setFontProperties = (
+  node: ChildrenProperties,
+  element: ElementTypeProperties,
+) => {
+  element.style.fontSize = node.fontSize
+  element.style.color = node.fontColor
+  element.style.fontFamily = node.fontFamily
+}
+
 export {
   imageElement,
   anchorElement,
