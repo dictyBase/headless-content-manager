@@ -80,7 +80,7 @@ const extractNodeContent = (node: ChildrenProperties) =>
 const elementWithContent = (elem: ElementTypeProperties) =>
   elem.textContent ? elem : null
 
-const processTextContent = (content: string) => content.replace(/\n/, "")
+const processTextContent = (content: string) => content.replace(newlineRgxp, "")
 
 export {
   imageElement,
