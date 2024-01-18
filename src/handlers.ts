@@ -6,6 +6,8 @@ import type {
   blockTypeProperties,
 } from "./types"
 
+const newlineRgxp = new RegExp(/\n/)
+
 const BLOCK_TYPES: blockTypeProperties = {
   divider: (document: Document) => document.createElement("hr"),
   div: (document: Document) => document.createElement("div"),
@@ -20,6 +22,7 @@ const BLOCK_TYPES: blockTypeProperties = {
   listItem: (document: Document) => document.createElement("li"),
   image: (document: Document) => document.createElement("img"),
   link: (document: Document) => document.createElement("a"),
+  br: (document: Document) => document.createElement("br"),
 }
 
 /**
@@ -34,18 +37,18 @@ const elementFromType = (document: Document, nodeType: string) =>
  * This function processes a child node and inserts its content into an element.
  */
 const processChildNode = (
+  document: Document,
   node: ChildrenProperties,
   element: ElementTypeProperties,
 ) =>
   match(extractNodeContent(node))
     .with(P.not(P.nullish), (textContent) => {
-      match(extractElementContent(element))
-        .with(P.not(P.nullish), (elementContent) => {
-          element.textContent = `${elementContent} ${textContent}`
-        })
-        .otherwise(() => {
-          element.insertAdjacentHTML("afterbegin", textContent)
-        })
+      if (newlineRgxp.test(textContent)) {
+        element.appendChild(document.createElement("br"))
+      }
+      element.appendChild(
+        document.createTextNode(processTextContent(textContent)),
+      )
     })
     .otherwise(() => {})
 
@@ -74,11 +77,10 @@ const imageElement = (node: LeafElementProperties, element: HTMLImageElement) =>
 const extractNodeContent = (node: ChildrenProperties) =>
   node.text ? node.text : null
 
-const extractElementContent = (elem: HTMLElement) =>
-  elem.textContent ? elem.textContent : null
-
 const elementWithContent = (elem: ElementTypeProperties) =>
   elem.textContent ? elem : null
+
+const processTextContent = (content: string) => content.replace(/\n/, "")
 
 export {
   imageElement,
