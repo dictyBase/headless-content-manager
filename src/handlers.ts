@@ -47,9 +47,8 @@ const processChildNode = (
       if (newlineRgxp.test(textContent)) {
         element.appendChild(document.createElement("br"))
       }
-      element.appendChild(
-        document.createTextNode(processTextContent(textContent)),
-      )
+      setBoldAndItalic({ document, node, element, textContent })
+      setFontProperties(node, element)
     })
     .otherwise(() => {})
 
