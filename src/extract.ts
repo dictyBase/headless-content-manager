@@ -26,7 +26,13 @@ const extractContent = async (
 }
 
 /**
- * This function converts a block node into corresponding HTML elements based on its type.
+ * Converts a block node to corresponding DOM elements using curried function
+ * patterns.
+ *
+ * This function takes a blockProperties object and applies different
+ * transformation logic based on the type of block node. It uses pattern
+ * matching to apply the appropriate transformations, returning the resulting
+ * DOM element.
  */
 const curriedBlockToElements =
   (document: Document) => (node: blockProperties) =>
@@ -64,7 +70,8 @@ const curriedBlockToElements =
       .otherwise(({ element }) => element)
 
 /**
- * Processes and appends child elements recursively to a given element.
+ * Processes a node recursively and, if applicable, appends the converted
+ * element to the current element.
  */
 const processRecursiveChildNode = (
   document: Document,
@@ -78,19 +85,9 @@ const processRecursiveChildNode = (
 }
 
 /**
- * Extracts all other elements from a given node in the document.
- *
- * In this function, the `allOtherElements` receives three parameters:
- * `document`, `node`, and `element`. It uses the `forEach` method to iterate
- * over each child node in the `node.children` collection.
- * For each child node, it checks if the node has a property called "type"
- * using the `in` operator. If the property exists, it calls the
- * `processRecursiveChildNode` function passing the `document`, `childNode`,
- * and `element` as arguments. Otherwise, it assumes the node is a regular
- * child node and calls the `processChildNode` function passing the `childNode`
- * and `element` as arguments.
+ * Iterates over all children of a given node and processes each child node.
+ * Nodes with a 'type' property are processed recursively, while others are handled directly.
  */
-
 const allOtherElements = (
   document: Document,
   node: blockProperties,

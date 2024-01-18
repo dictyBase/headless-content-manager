@@ -35,7 +35,10 @@ const elementFromType = (document: Document, nodeType: string) =>
     .otherwise(() => null)
 
 /**
- * This function processes a child node and inserts its content into an element.
+ * Processes a child node by applying necessary formatting and appending it to the parent element.
+ * If the child node's text content contains a newline, it appends a <br> element.
+ * It calls `setBoldAndItalic` to apply bold and italic formatting if necessary
+ * and `setFontProperties` to apply relevant font properties.
  */
 const processChildNode = (
   document: Document,
@@ -82,6 +85,11 @@ const elementWithContent = (elem: ElementTypeProperties) =>
 
 const processTextContent = (content: string) => content.replace(newlineRgxp, "")
 
+/**
+ * Applies bold and/or italic styling to a given text content based on the properties of a node.
+ * The styling is applied by creating HTML `<b>` and `<i>` elements and appending them to the
+ * specified element within the document.
+ */
 const setBoldAndItalic = ({
   document,
   element,
@@ -124,6 +132,9 @@ const setBoldAndItalic = ({
       )
     })
 
+/**
+ * Sets the font properties of an HTML element based on the given node attributes.
+ */
 const setFontProperties = (
   node: ChildrenProperties,
   element: ElementTypeProperties,
