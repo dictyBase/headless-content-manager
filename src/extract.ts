@@ -103,7 +103,7 @@ const allOtherElements = (
         (childNode) => processRecursiveChildNode(document, childNode, element),
       )
       .otherwise((childNode) => {
-        processChildNode(childNode as ChildrenProperties, element)
+        processChildNode(document, childNode as ChildrenProperties, element)
       })
   })
 }
