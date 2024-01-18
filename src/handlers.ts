@@ -4,6 +4,7 @@ import type {
   LeafElementProperties,
   ElementTypeProperties,
   blockTypeProperties,
+  handleBoldAndItalicProperties,
 } from "./types"
 
 const newlineRgxp = new RegExp(/\n/)
@@ -82,6 +83,47 @@ const elementWithContent = (elem: ElementTypeProperties) =>
 
 const processTextContent = (content: string) => content.replace(newlineRgxp, "")
 
+const setBoldAndItalic = ({
+  document,
+  element,
+  node,
+  textContent,
+}: handleBoldAndItalicProperties) =>
+  match({
+    italic: node.italic,
+    bold: node.bold,
+    document,
+    element,
+    textContent,
+  })
+    .with(
+      { italic: true, bold: true },
+      ({ document, element, textContent }) => {
+        const bold = document.createElement("b")
+        const italic = document.createElement("i")
+        const txtNode = document.createTextNode(processTextContent(textContent))
+        italic.appendChild(txtNode)
+        bold.appendChild(bold)
+        element.appendChild(bold)
+      },
+    )
+    .with({ italic: true }, ({ document, element, textContent }) => {
+      const italic = document.createElement("i")
+      const txtNode = document.createTextNode(processTextContent(textContent))
+      italic.appendChild(txtNode)
+      element.appendChild(italic)
+    })
+    .with({ bold: true }, ({ document, element, textContent }) => {
+      const bold = document.createElement("b")
+      const txtNode = document.createTextNode(processTextContent(textContent))
+      bold.appendChild(txtNode)
+      element.appendChild(bold)
+    })
+    .otherwise(({ textContent, document, element }) => {
+      element.appendChild(
+        document.createTextNode(processTextContent(textContent)),
+      )
+    })
 export {
   imageElement,
   anchorElement,
