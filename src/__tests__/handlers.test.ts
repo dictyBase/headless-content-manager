@@ -1,12 +1,4 @@
-import {
-  expect,
-  describe,
-  beforeEach,
-  afterEach,
-  test,
-  mock,
-  jest,
-} from "bun:test"
+import { expect, describe, beforeEach, afterEach, test } from "bun:test"
 import { JSDOM, type DOMWindow } from "jsdom"
 import { match } from "ts-pattern"
 import {
@@ -18,7 +10,6 @@ import {
   processChildNode,
 } from "../handlers"
 
-// blockType === "paragraph" || blockType === "center" ? "p" : blockType,
 const blockTypesTestCases = Object.keys(BLOCK_TYPES).map((blockType) => {
   return {
     blockType: blockType,
