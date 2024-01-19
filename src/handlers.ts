@@ -156,4 +156,5 @@ export {
   setFontProperties,
   setBoldAndItalic,
   processTextContent,
+  BLOCK_TYPES,
 }
