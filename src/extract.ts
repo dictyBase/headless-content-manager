@@ -105,4 +105,4 @@ const allOtherElements = (
   })
 }
 
-export { extractContent, curriedBlockToElements }
+export { extractContent, curriedBlockToElements, allOtherElements }
