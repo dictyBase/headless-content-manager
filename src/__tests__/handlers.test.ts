@@ -1,4 +1,12 @@
-import { expect, test, describe, beforeEach, afterEach, it } from "bun:test"
+import {
+  expect,
+  describe,
+  beforeEach,
+  afterEach,
+  test,
+  mock,
+  jest,
+} from "bun:test"
 import { JSDOM, type DOMWindow } from "jsdom"
 import { match } from "ts-pattern"
 import {
@@ -7,6 +15,7 @@ import {
   processTextContent,
   elementFromType,
   BLOCK_TYPES,
+  processChildNode,
 } from "../handlers"
 
 // blockType === "paragraph" || blockType === "center" ? "p" : blockType,
@@ -70,7 +79,7 @@ describe("setBoldAndItalic", () => {
     // After each test, clean up and destroy the JSDOM instance
     window.close()
   })
-  it("should append bold and italic elements when needed", () => {
+  test("should append bold and italic elements when needed", () => {
     const elementMock = document.createElement("div")
     const nodePropsMob = {
       text: "Test text",
@@ -95,7 +104,7 @@ describe("setBoldAndItalic", () => {
     expect(italicElement?.textContent).toBe(nodePropsMob.text)
   })
 
-  it("should append bold elements when needed", () => {
+  test("should append bold elements when needed", () => {
     const elementMock = document.createElement("div")
     const nodePropsMob = {
       text: "Test text",
@@ -115,7 +124,7 @@ describe("setBoldAndItalic", () => {
     expect(boldElement?.textContent).toBe(nodePropsMob.text)
   })
 
-  it("should append italic elements when needed", () => {
+  test("should append italic elements when needed", () => {
     const elementMock = document.createElement("div")
     const nodePropsMob = {
       text: "Test text",
@@ -135,7 +144,7 @@ describe("setBoldAndItalic", () => {
     expect(italicElement?.textContent).toBe(nodePropsMob.text)
   })
 
-  it("should append text without bold and italic elements", () => {
+  test("should append text without bold and italic elements", () => {
     const elementMock = document.createElement("div")
     const nodePropsMob = {
       text: "Test text",
@@ -154,19 +163,19 @@ describe("setBoldAndItalic", () => {
 })
 
 describe("processTextContent", () => {
-  it("should remove the first newline character from the content", () => {
+  test("should remove the first newline character from the content", () => {
     const input = "This is a test string.\nIt has several\nnew lines."
     const expectedOutput = "This is a test string.It has several\nnew lines."
     expect(processTextContent(input)).toBe(expectedOutput)
   })
 
-  it("should leave the content unchanged if there are no newlines", () => {
+  test("should leave the content unchanged if there are no newlines", () => {
     const input = "This is a test string without new lines."
     const expectedOutput = "This is a test string without new lines."
     expect(processTextContent(input)).toBe(expectedOutput)
   })
 
-  it("should return empty string if content is empty", () => {
+  test("should return empty string if content is empty", () => {
     const input = ""
     const expectedOutput = ""
     expect(processTextContent(input)).toBe(expectedOutput)
@@ -198,4 +207,45 @@ describe("elementFromType", () => {
       expect(element?.tagName.toLowerCase()).toBe(expectedTag)
     },
   )
+})
+
+describe("processChildNode", () => {
+  let document: Document
+  let window: DOMWindow
+  beforeEach(() => {
+    const dom = new JSDOM(`<!DOCTYPE html><html></html>`)
+    window = dom.window
+    document = window.document
+  })
+  afterEach(() => {
+    window.close()
+  })
+  test("should append a <br> when there's a newline in text content", () => {
+    const node = {
+      text: "\nTest text",
+      fontColor: "black",
+      fontSize: "12px",
+      fontFamily: "Arial",
+      bold: true,
+      italic: true,
+    }
+    const parentElement = document.createElement("div")
+    processChildNode(document, node, parentElement)
+    expect(parentElement.firstElementChild?.tagName).toBe("BR")
+  })
+
+  test("should not append a <br> if there's no newline in text content", () => {
+    const node = {
+      text: "Test text",
+      fontColor: "black",
+      fontSize: "12px",
+      fontFamily: "Arial",
+      bold: true,
+      italic: true,
+    }
+    const parentElement = document.createElement("div")
+    processChildNode(document, node, parentElement)
+    const childElement = document.querySelector("br")
+    expect(childElement).toBe(null)
+  })
 })
