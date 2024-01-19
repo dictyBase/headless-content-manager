@@ -48,7 +48,8 @@ const curriedBlockToElements =
       // "node" and "element" as arguments, and return the "element".
       .with({ nodeType: "image" }, ({ node, element }) => {
         imageElement(node as LeafElementProperties, element as HTMLImageElement)
-        return elementWithContent(element as ElementTypeProperties)
+        return element
+        // return elementWithContent(element as ElementTypeProperties)
       })
       // If the nodeType is "link", call the "anchorElement" function with the
       // "node" and "element" as arguments, and return the "element".
@@ -57,7 +58,8 @@ const curriedBlockToElements =
           node as LeafElementProperties,
           element as HTMLAnchorElement,
         )
-        return elementWithContent(element as ElementTypeProperties)
+        return element
+        // return elementWithContent(element as ElementTypeProperties)
       })
       // If the "element" is not null or undefined, call the "allOtherElements"
       // function with the "document", "node", and "element" as arguments,
