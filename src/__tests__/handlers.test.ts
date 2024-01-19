@@ -1,10 +1,30 @@
 import { expect, test, describe, beforeEach, afterEach, it } from "bun:test"
 import { JSDOM, type DOMWindow } from "jsdom"
+import { match } from "ts-pattern"
 import {
   setFontProperties,
   setBoldAndItalic,
   processTextContent,
+  elementFromType,
+  BLOCK_TYPES,
 } from "../handlers"
+
+// blockType === "paragraph" || blockType === "center" ? "p" : blockType,
+const blockTypesTestCases = Object.keys(BLOCK_TYPES).map((blockType) => {
+  return {
+    blockType: blockType,
+    expectedTag: match(blockType)
+      .with("paragraph", () => "p")
+      .with("center", () => "p")
+      .with("link", () => "a")
+      .with("image", () => "img")
+      .with("listItem", () => "li")
+      .with("orderedList", () => "ol")
+      .with("unorderedList", () => "ul")
+      .with("divider", () => "hr")
+      .otherwise((blockType) => blockType),
+  }
+})
 
 describe("setFontProperties", () => {
   let document: Document
@@ -151,4 +171,31 @@ describe("processTextContent", () => {
     const expectedOutput = ""
     expect(processTextContent(input)).toBe(expectedOutput)
   })
+})
+
+describe("elementFromType", () => {
+  let document: Document
+  let window: DOMWindow
+  beforeEach(() => {
+    const dom = new JSDOM(`<!DOCTYPE html><html></html>`)
+    window = dom.window
+    document = window.document
+  })
+  afterEach(() => {
+    // After each test, clean up and destroy the JSDOM instance
+    window.close()
+  })
+  test("should return null for undefined block type", () => {
+    const undefinedType = "nonexistent"
+    const element = elementFromType(document, undefinedType)
+    expect(element).toBeNull()
+  })
+  test.each(blockTypesTestCases)(
+    `should correctly create elements for block type`,
+    ({ blockType, expectedTag }) => {
+      const element = elementFromType(document, blockType)
+      expect(element).not.toBeNull()
+      expect(element?.tagName.toLowerCase()).toBe(expectedTag)
+    },
+  )
 })
