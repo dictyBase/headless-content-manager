@@ -113,7 +113,7 @@ const setBoldAndItalic = ({
         const italic = document.createElement("i")
         const txtNode = document.createTextNode(processTextContent(textContent))
         italic.appendChild(txtNode)
-        bold.appendChild(bold)
+        bold.appendChild(italic)
         element.appendChild(bold)
       },
     )
@@ -153,4 +153,7 @@ export {
   elementFromType,
   processChildNode,
   elementWithContent,
+  setFontProperties,
+  setBoldAndItalic,
+  processTextContent,
 }
