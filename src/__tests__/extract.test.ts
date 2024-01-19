@@ -1,6 +1,6 @@
 import { expect, describe, beforeEach, afterEach, test } from "bun:test"
 import { JSDOM, type DOMWindow } from "jsdom"
-import { allOtherElements } from "../extract"
+import { allOtherElements, curriedBlockToElements } from "../extract"
 
 describe("allOtherElements", () => {
   let document: Document
@@ -109,5 +109,58 @@ describe("allOtherElements", () => {
     expect(mockElement.firstElementChild?.lastElementChild?.textContent).toBe(
       "Hello bold",
     )
+  })
+})
+
+describe("curriedBlockToElements", () => {
+  let document: Document
+  let window: DOMWindow
+  beforeEach(() => {
+    const dom = new JSDOM(`<!DOCTYPE html><html></html>`)
+    window = dom.window
+    document = window.document
+  })
+  afterEach(() => {
+    window.close()
+  })
+
+  test("handles divider elements correctly", () => {
+    const node = {
+      type: "divider",
+      children: [], // dividers typically don't have children
+    }
+    const element = curriedBlockToElements(document)(node)
+    expect(element?.tagName).toBe("HR")
+    expect(element?.childNodes.length).toBe(0) // dividers should have no children
+  })
+
+  test("handles image elements correctly", () => {
+    const url = "http://example.com/image.png"
+    const node = {
+      type: "image",
+      children: [], // images don't typically have children in this model
+      url: url,
+    }
+    const element = curriedBlockToElements(document)(node) as HTMLImageElement
+    expect(element?.tagName).toBe("IMG")
+    expect(element.src).toBe(url)
+  })
+
+  test("handles link elements correctly", () => {
+    const href = "http://example.com/"
+    const node = {
+      type: "link",
+      children: [
+        {
+          text: href,
+          fontColor: "blue",
+          fontSize: "12px",
+          fontFamily: "Arial",
+        },
+      ],
+    }
+    const element = curriedBlockToElements(document)(node) as HTMLAnchorElement
+    expect(element?.tagName).toBe("A")
+    expect(element.href).toBe(href)
   })
 })
