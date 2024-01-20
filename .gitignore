@@ -175,6 +175,7 @@ dist
 .DS_Store
 
 dsc-content/
+dsc-html/
 frontpage-content/
 slatejs/
 slatejs-content/
