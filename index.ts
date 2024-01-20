@@ -3,7 +3,7 @@ import {
   slateToLexical as legacySlateToLexical,
   slateToHtml as legacySlateToHtml,
 } from "./src/legacyConverter"
-import { slateToHtml, slateToLexical } from "./src/converter"
+import { slateToHtml, slateToLexical, batchSlateToHtml } from "./src/converter"
 
 const program = new Command()
 
@@ -18,6 +18,21 @@ program
   .requiredOption("-f, --file <input>", "input file in slatejs format")
   .action(async (options) => {
     console.log(await slateToHtml(options.file))
+  })
+
+program
+  .command("batch-slate-to-html")
+  .description("convert a folder of slatejs format files to html")
+  .requiredOption(
+    "-i, --input <input>",
+    "input folder with slatejs format files",
+  )
+  .requiredOption(
+    "-o, --output <output>",
+    "output folder where html files will be written",
+  )
+  .action(async (options) => {
+    await batchSlateToHtml(options.input, options.output)
   })
 
 program

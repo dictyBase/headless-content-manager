@@ -5,7 +5,7 @@ import { extractContent, curriedBlockToElements } from "./extract"
 import { syncEditor, editorInstance } from "./editor"
 import { type ElementTypeProperties } from "./types"
 import { readdir, writeFile } from "node:fs/promises"
-import { join, parse, format } from "path"
+import { join, parse } from "path"
 
 const curriedAddBlockElement =
   (document: Document) => (elem: ElementTypeProperties | null) =>
