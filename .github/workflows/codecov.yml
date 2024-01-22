@@ -2,7 +2,7 @@ name: Run unit tests with coverage
 on:
   push:
     branches:
-      - main
+      - master
 jobs:
   test:
     runs-on: ubuntu-latest
