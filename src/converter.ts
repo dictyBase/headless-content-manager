@@ -1,6 +1,11 @@
 import { pipe } from "fp-ts/function"
 import { JSDOM } from "jsdom"
-import { map as Amap } from "fp-ts/Array"
+import {
+  map as Amap,
+  filter as Afilter,
+  bindTo,
+  let as Alet,
+} from "fp-ts/Array"
 import { extractContent, curriedBlockToElements } from "./extract"
 import { syncEditor, editorInstance } from "./editor"
 import { type ElementTypeProperties } from "./types"
@@ -39,22 +44,22 @@ const slateToHtml = async (input: string) => {
   return dom.serialize()
 }
 
-const allHtmls = async (folder: string) => {
-  const allFiles = await readdir(folder)
-  return allFiles
-    .filter((file) => file.endsWith(".json"))
-    .map(async (file) => {
+const allHtmls = async (folder: string) =>
+  pipe(
+    await readdir(folder),
+    Afilter((file) => file.endsWith(".json")),
+    Amap(async (file) => {
       const inputFile = join(folder, file)
       const html = await slateToHtml(inputFile)
       return { html, file }
-    })
-}
+    }),
+  )
 
 const batchSlateToHtml = async (input: string, output: string) => {
   const allContents = await Promise.all(await allHtmls(input))
   allContents.map(async ({ html, file }) => {
     const parsedFile = parse(file)
-    await writeFile(join(output, `${parsedFile.name}.html`), html)
+    await Bun.write(join(output, `${parsedFile.name}.html`), html)
   })
 }
 
