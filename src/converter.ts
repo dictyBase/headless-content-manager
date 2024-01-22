@@ -31,6 +31,25 @@ const slateToLexical = async (input: string) => {
   return JSON.stringify(contEditor.getEditorState(), null, 2)
 }
 
+const alltoLexical = async (folder: string) =>
+  pipe(
+    await readdir(folder),
+    Afilter((file) => file.endsWith(".json")),
+    Amap(async (file) => {
+      const inputFile = join(folder, file)
+      const json = await slateToLexical(inputFile)
+      return { json, file }
+    }),
+  )
+
+const batchSlateToLexical = async (input: string, output: string) => {
+  const allContents = await Promise.all(await alltoLexical(input))
+  allContents.map(async ({ json, file }) => {
+    const parsedFile = parse(file)
+    await Bun.write(join(output, `${parsedFile.name}.json`), json)
+  })
+}
+
 const slateToHtml = async (input: string) => {
   const dom = new JSDOM(`<!DOCTYPE html><html></html>`)
   const document = dom.window.document
@@ -63,4 +82,4 @@ const batchSlateToHtml = async (input: string, output: string) => {
   })
 }
 
-export { slateToLexical, slateToHtml, batchSlateToHtml }
+export { slateToLexical, slateToHtml, batchSlateToHtml, batchSlateToLexical }
