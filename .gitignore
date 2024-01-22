@@ -176,7 +176,9 @@ dist
 
 dsc-content/
 dsc-html/
+dsc-lexical/
 frontpage-content/
+frontpage-lexical/
 slatejs/
 slatejs-content/
 tryouts/
