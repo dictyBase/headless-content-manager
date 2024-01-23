@@ -1,8 +1,9 @@
 import { createPromiseClient, type PromiseClient } from "@connectrpc/connect"
 import { createGrpcTransport } from "@connectrpc/connect-node"
 import { ContentService } from "./es/dictybase/content/content_connect"
-import { tryCatch } from "fp-ts/TaskEither"
+import { tryCatch, fromIOK } from "fp-ts/TaskEither"
 import { toError } from "fp-ts/Either"
+import * as C from "fp-ts/Console"
 
 type LoadContentProperties = {
   name: string
@@ -34,4 +35,8 @@ const loadContent =
       return persistedContent
     }, toError)
 
-export { contentClient, loadContent }
+const errLogger = fromIOK(C.error)
+const infoLogger = fromIOK(C.info)
+const warnLogger = fromIOK(C.warn)
+
+export { contentClient, loadContent, errLogger, infoLogger, warnLogger }
