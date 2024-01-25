@@ -1,15 +1,9 @@
 import { pipe } from "fp-ts/function"
 import { JSDOM } from "jsdom"
-import {
-  map as Amap,
-  filter as Afilter,
-  bindTo,
-  let as Alet,
-} from "fp-ts/Array"
 import { extractContent, curriedBlockToElements } from "./extract"
 import { syncEditor, editorInstance } from "./editor"
 import { type ElementTypeProperties } from "./types"
-import { readdir, writeFile } from "node:fs/promises"
+import { readdir } from "node:fs/promises"
 import { join, parse } from "path"
 
 const curriedAddBlockElement =
