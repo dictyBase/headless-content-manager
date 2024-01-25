@@ -20,20 +20,21 @@ const contentClient = (url: string) => {
 const loadContent =
   (client: PromiseClient<typeof ContentService>) =>
   ({ name, namespace, createdBy, content }: LoadContentProperties) =>
-    tryCatch(async () => {
-      const persistedContent = await client.storeContent({
-        data: {
-          attributes: {
-            name,
-            namespace,
-            createdBy,
-            content,
-            slug: `${name}-${namespace}`,
+    tryCatch(
+      () =>
+        client.storeContent({
+          data: {
+            attributes: {
+              name,
+              namespace,
+              createdBy,
+              content,
+              slug: `${name}-${namespace}`,
+            },
           },
-        },
-      })
-      return persistedContent
-    }, toError)
+        }),
+      toError,
+    )
 
 const errLogger = tapIO(Console.error)
 const infoLogger = tapIO(Console.info)
