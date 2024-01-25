@@ -1,5 +1,6 @@
 import { pipe } from "fp-ts/function"
 import { JSDOM } from "jsdom"
+import { map as Amap, filter as Afilter } from "fp-ts/Array"
 import { extractContent, curriedBlockToElements } from "./extract"
 import { syncEditor, editorInstance } from "./editor"
 import { type ElementTypeProperties } from "./types"
@@ -25,23 +26,21 @@ const slateToLexical = async (input: string) => {
   return JSON.stringify(contEditor.getEditorState(), null, 2)
 }
 
-const alltoLexical = async (folder: string) =>
-  pipe(
-    await readdir(folder),
-    Afilter((file) => file.endsWith(".json")),
-    Amap(async (file) => {
-      const inputFile = join(folder, file)
-      const json = await slateToLexical(inputFile)
-      return { json, file }
-    }),
-  )
+const convertSlateToLexicalAndWrite =
+  (output: string) => async (jsonFilePath: string) => {
+    const json = await slateToLexical(jsonFilePath)
+    const parsedFile = parse(jsonFilePath)
+    await Bun.write(join(output, `${parsedFile.name}.json`), json)
+  }
 
 const batchSlateToLexical = async (input: string, output: string) => {
-  const allContents = await Promise.all(await alltoLexical(input))
-  allContents.map(async ({ json, file }) => {
-    const parsedFile = parse(file)
-    await Bun.write(join(output, `${parsedFile.name}.json`), json)
-  })
+  const curriedConverter = convertSlateToLexicalAndWrite(output)
+  pipe(
+    await readdir(input),
+    Afilter((inputFile) => inputFile.endsWith(".json")),
+    Amap((jsonFileName) => join(input, jsonFileName)),
+    Amap(curriedConverter),
+  )
 }
 
 const slateToHtml = async (input: string) => {
@@ -57,12 +56,12 @@ const slateToHtml = async (input: string) => {
   return dom.serialize()
 }
 
-const allHtmls = async (folder: string) =>
+const allHtmls = async (input: string) =>
   pipe(
-    await readdir(folder),
+    await readdir(input),
     Afilter((file) => file.endsWith(".json")),
     Amap(async (file) => {
-      const inputFile = join(folder, file)
+      const inputFile = join(input, file)
       const html = await slateToHtml(inputFile)
       return { html, file }
     }),
