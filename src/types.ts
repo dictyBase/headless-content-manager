@@ -45,6 +45,12 @@ type handleBoldAndItalicProperties = {
   textContent: string
 }
 
+type convertJsonFilesToLexicalProperties = {
+  files: Array<string>
+  folder: string
+  server: string
+}
+
 export type {
   ChildrenProperties,
   LeafElementProperties,
@@ -53,4 +59,5 @@ export type {
   blockTypeProperties,
   ElementProperties,
   handleBoldAndItalicProperties,
+  convertJsonFilesToLexicalProperties,
 }
