@@ -51,6 +51,15 @@ type convertJsonFilesToLexicalProperties = {
   server: string
 }
 
+type persistContentProperties = {
+  createdBy: string
+  content: string
+  fileinfo: {
+    name: string
+    namespace: string
+  }
+}
+
 export type {
   ChildrenProperties,
   LeafElementProperties,
@@ -60,4 +69,5 @@ export type {
   ElementProperties,
   handleBoldAndItalicProperties,
   convertJsonFilesToLexicalProperties,
+  persistContentProperties,
 }
