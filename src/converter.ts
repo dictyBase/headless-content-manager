@@ -22,6 +22,7 @@ import { syncEditor, editorInstance } from "./editor"
 import {
   type ElementTypeProperties,
   type convertJsonFilesToLexicalProperties,
+  type SlateToLexicalAndPersistProperties,
 } from "./types"
 import { readdir } from "node:fs/promises"
 import { join, parse, type ParsedPath } from "path"
@@ -84,14 +85,16 @@ const convertSlateToLexicalAndPersist = ({
 const convertJsonFilesToLexical = ({
   files,
   folder,
-  server,
+  loadContentFn,
 }: convertJsonFilesToLexicalProperties) => {
-  const curriedSlateToLexical = convertSlateToLexicalAndPersist(server)
   return pipe(
-    files,
-    Afilter((file) => file.endsWith(".json")),
-    Amap((jsonFileName) => join(folder, jsonFileName)),
-    Amap(curriedSlateToLexical),
+    ADo,
+    Alet("folder", () => folder),
+    Alet("loadContentFn", () => loadContentFn),
+    Abind("files", () => files),
+    Alet("isJsonFiles", ({ files }) => files.endsWith(".json")),
+    Alet("jsonFilePath", ({ folder, files }) => join(folder, files)),
+    Amap(convertSlateToLexicalAndPersist),
     Asequence(ApplicativeSeq),
   )
 }
@@ -102,7 +105,7 @@ const loadLexicalContent = (folder: string, server: string) =>
     TElet("server", () => server),
     TElet("folder", () => folder),
     TElet("client", ({ server }) => contentClient(server)),
-    TElet("contentLoader", ({ client }) => loadContent(client)),
+    TElet("loadContentFn", ({ client }) => loadContent(client)),
     TEbind("files", ({ folder }) => tryCatch(() => readdir(folder), toError)),
     TEbind("contents", convertJsonFilesToLexical),
   )
@@ -149,4 +152,10 @@ const batchSlateToHtml = async (input: string, output: string) => {
   })
 }
 
-export { slateToLexical, slateToHtml, batchSlateToHtml, batchSlateToLexical }
+export {
+  slateToLexical,
+  slateToHtml,
+  batchSlateToHtml,
+  batchSlateToLexical,
+  loadLexicalContent,
+}
