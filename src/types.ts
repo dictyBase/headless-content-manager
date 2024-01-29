@@ -1,3 +1,6 @@
+import { type TaskEither } from "fp-ts/TaskEither"
+import { Content } from "./es/dictybase/content/content_pb"
+
 type ChildrenProperties = {
   text: string | null
   fontColor: string
@@ -48,7 +51,7 @@ type handleBoldAndItalicProperties = {
 type convertJsonFilesToLexicalProperties = {
   files: Array<string>
   folder: string
-  server: string
+  loadContentFn: LoadContentFnProperties
 }
 
 type persistContentProperties = {
@@ -58,6 +61,22 @@ type persistContentProperties = {
     name: string
     namespace: string
   }
+}
+
+type LoadContentProperties = {
+  name: string
+  namespace: string
+  createdBy: string
+  content: string
+}
+
+type LoadContentFnProperties = (
+  props: LoadContentProperties,
+) => TaskEither<Error, Content>
+
+type SlateToLexicalAndPersistProperties = {
+  jsonFilePath: string
+  loadContentFn: LoadContentFnProperties
 }
 
 export type {
@@ -70,4 +89,7 @@ export type {
   handleBoldAndItalicProperties,
   convertJsonFilesToLexicalProperties,
   persistContentProperties,
+  LoadContentProperties,
+  LoadContentFnProperties,
+  SlateToLexicalAndPersistProperties,
 }
