@@ -4,13 +4,7 @@ import { ContentService } from "./es/dictybase/content/content_connect"
 import { tryCatch, tapIO } from "fp-ts/TaskEither"
 import { toError } from "fp-ts/Either"
 import * as Console from "fp-ts/Console"
-
-type LoadContentProperties = {
-  name: string
-  namespace: string
-  createdBy: string
-  content: string
-}
+import { type LoadContentProperties } from "./types"
 
 const contentClient = (url: string) => {
   const transport = createGrpcTransport({ baseUrl: url, httpVersion: "2" })
