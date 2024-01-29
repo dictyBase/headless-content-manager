@@ -63,6 +63,21 @@ const convertSlateToLexicalAndPersist = (server: string) => {
       TEmap(({ output }) => output),
     )
 }
+const convertJsonFilesToLexical = ({
+  files,
+  folder,
+  server,
+}: convertJsonFilesToLexicalProperties) => {
+  const curriedSlateToLexical = convertSlateToLexicalAndPersist(server)
+  return pipe(
+    files,
+    Afilter((file) => file.endsWith(".json")),
+    Amap((jsonFileName) => join(folder, jsonFileName)),
+    Amap(curriedSlateToLexical),
+    Asequence(ApplicativeSeq),
+  )
+}
+
 const batchSlateToLexical = async (input: string, output: string) => {
   const curriedConverter = convertSlateToLexicalAndWrite(output)
   pipe(
