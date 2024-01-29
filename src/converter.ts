@@ -37,6 +37,32 @@ const parseFileName = ({ parsedFile }: { parsedFile: ParsedPath }) => {
   const [namespace, name] = parsedFile.name.split("-")
   return { name, namespace }
 }
+
+const convertSlateToLexicalAndPersist = (server: string) => {
+  const client = contentClient(server)
+  const curriedLoadContent = loadContent(client)
+  return (jsonFilePath: string) =>
+    pipe(
+      TEDo,
+      TElet("parsedFile", () => parse(jsonFilePath)),
+      TElet("fileinfo", parseFileName),
+      TElet("createdBy", () => "pfey@northwestern.edu"),
+      TEbind("content", () =>
+        tryCatch(() => slateToLexical(jsonFilePath), toError),
+      ),
+      TEbind(
+        "output",
+        ({ content, createdBy, fileinfo: { name, namespace } }) =>
+          curriedLoadContent({
+            name,
+            namespace,
+            createdBy,
+            content,
+          }),
+      ),
+      TEmap(({ output }) => output),
+    )
+}
 const batchSlateToLexical = async (input: string, output: string) => {
   const curriedConverter = convertSlateToLexicalAndWrite(output)
   pipe(
