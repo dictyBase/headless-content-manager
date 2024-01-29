@@ -10,6 +10,9 @@ import {
   map as Amap,
   filter as Afilter,
   sequence as Asequence,
+  Do as ADo,
+  let as Alet,
+  bind as Abind,
 } from "fp-ts/Array"
 import { toError } from "fp-ts/Either"
 import { pipe } from "fp-ts/function"
@@ -55,31 +58,28 @@ const parseFileName = ({ parsedFile }: { parsedFile: ParsedPath }) => {
   return { name, namespace }
 }
 
-const convertSlateToLexicalAndPersist = (server: string) => {
-  const client = contentClient(server)
-  const curriedLoadContent = loadContent(client)
-  return (jsonFilePath: string) =>
-    pipe(
-      TEDo,
-      TElet("parsedFile", () => parse(jsonFilePath)),
-      TElet("fileinfo", parseFileName),
-      TElet("createdBy", () => "pfey@northwestern.edu"),
-      TEbind("content", () =>
-        tryCatch(() => slateToLexical(jsonFilePath), toError),
-      ),
-      TEbind(
-        "output",
-        ({ content, createdBy, fileinfo: { name, namespace } }) =>
-          curriedLoadContent({
-            name,
-            namespace,
-            createdBy,
-            content,
-          }),
-      ),
-      TEmap(({ output }) => output),
-    )
-}
+const convertSlateToLexicalAndPersist = ({
+  jsonFilePath,
+  loadContentFn,
+}: SlateToLexicalAndPersistProperties) =>
+  pipe(
+    TEDo,
+    TElet("parsedFile", () => parse(jsonFilePath)),
+    TElet("fileinfo", parseFileName),
+    TElet("createdBy", () => "pfey@northwestern.edu"),
+    TEbind("content", () =>
+      tryCatch(() => slateToLexical(jsonFilePath), toError),
+    ),
+    TEbind("output", ({ content, createdBy, fileinfo: { name, namespace } }) =>
+      loadContentFn({
+        name,
+        namespace,
+        createdBy,
+        content,
+      }),
+    ),
+    TEmap(({ output }) => output),
+  )
 
 const convertJsonFilesToLexical = ({
   files,
