@@ -33,6 +33,10 @@ const convertSlateToLexicalAndWrite =
     await Bun.write(join(output, `${parsedFile.name}.json`), json)
   }
 
+const parseFileName = ({ parsedFile }: { parsedFile: ParsedPath }) => {
+  const [namespace, name] = parsedFile.name.split("-")
+  return { name, namespace }
+}
 const batchSlateToLexical = async (input: string, output: string) => {
   const curriedConverter = convertSlateToLexicalAndWrite(output)
   pipe(
