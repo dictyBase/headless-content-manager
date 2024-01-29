@@ -1,11 +1,28 @@
+import {
+  tryCatch,
+  map as TEmap,
+  Do as TEDo,
+  bind as TEbind,
+  let as TElet,
+  ApplicativeSeq,
+} from "fp-ts/TaskEither"
+import {
+  map as Amap,
+  filter as Afilter,
+  sequence as Asequence,
+} from "fp-ts/Array"
+import { toError } from "fp-ts/Either"
 import { pipe } from "fp-ts/function"
 import { JSDOM } from "jsdom"
-import { map as Amap, filter as Afilter } from "fp-ts/Array"
 import { extractContent, curriedBlockToElements } from "./extract"
 import { syncEditor, editorInstance } from "./editor"
-import { type ElementTypeProperties } from "./types"
+import {
+  type ElementTypeProperties,
+  type convertJsonFilesToLexicalProperties,
+} from "./types"
 import { readdir } from "node:fs/promises"
-import { join, parse } from "path"
+import { join, parse, type ParsedPath } from "path"
+import { contentClient, loadContent } from "./grpc"
 
 const curriedAddBlockElement =
   (document: Document) => (elem: ElementTypeProperties | null) =>
@@ -63,6 +80,7 @@ const convertSlateToLexicalAndPersist = (server: string) => {
       TEmap(({ output }) => output),
     )
 }
+
 const convertJsonFilesToLexical = ({
   files,
   folder,
@@ -77,6 +95,17 @@ const convertJsonFilesToLexical = ({
     Asequence(ApplicativeSeq),
   )
 }
+
+const loadLexicalContent = (folder: string, server: string) =>
+  pipe(
+    TEDo,
+    TElet("server", () => server),
+    TElet("folder", () => folder),
+    TElet("client", ({ server }) => contentClient(server)),
+    TElet("contentLoader", ({ client }) => loadContent(client)),
+    TEbind("files", ({ folder }) => tryCatch(() => readdir(folder), toError)),
+    TEbind("contents", convertJsonFilesToLexical),
+  )
 
 const batchSlateToLexical = async (input: string, output: string) => {
   const curriedConverter = convertSlateToLexicalAndWrite(output)
