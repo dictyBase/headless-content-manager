@@ -59,6 +59,12 @@ const parseFileName = ({ parsedFile }: { parsedFile: ParsedPath }) => {
   return { name, namespace }
 }
 
+const jsonFiles = (files: Array<string>) =>
+  pipe(
+    files,
+    Afilter((f) => f.endsWith(".json")),
+  )
+
 const convertSlateToLexicalAndPersist = ({
   jsonFilePath,
   loadContentFn,
@@ -91,8 +97,7 @@ const convertJsonFilesToLexical = ({
     ADo,
     Alet("folder", () => folder),
     Alet("loadContentFn", () => loadContentFn),
-    Abind("files", () => files),
-    Alet("isJsonFiles", ({ files }) => files.endsWith(".json")),
+    Abind("files", jsonFiles),
     Alet("jsonFilePath", ({ folder, files }) => join(folder, files)),
     Amap(convertSlateToLexicalAndPersist),
     Asequence(ApplicativeSeq),
