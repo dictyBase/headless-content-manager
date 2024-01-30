@@ -1,4 +1,4 @@
-import { Command } from "commander"
+import { Command, Option } from "commander"
 import {
   slateToLexical as legacySlateToLexical,
   slateToHtml as legacySlateToHtml,
@@ -9,6 +9,7 @@ import {
   batchSlateToHtml,
   batchSlateToLexical,
 } from "./src/converter"
+import { strainFetcher } from "./src/retriever"
 
 const program = new Command()
 
@@ -77,6 +78,32 @@ program
   .requiredOption("-f, --file <input>", "input file in legacy slatejs format")
   .action(async (options) => {
     console.log(await legacySlateToLexical(options.file))
+  })
+
+program
+  .command("strain-info")
+  .description("retrieve strain information from stock grpc service")
+  .requiredOption("-i, --strain-id <identifier>", "strain identifier or DBS id")
+  .addOption(
+    new Option("-a, --host <address>", "host address of stock grpc service")
+      .default("stock-api")
+      .env("STOCK_API_SERVICE_HOST"),
+  )
+  .addOption(
+    new Option("-p, --port <port>", "port of stock grpc service").env(
+      "STOCK_API_SERVICE_PORT",
+    ),
+  )
+  .action(async (options) => {
+    try {
+      const output = await strainFetcher(
+        `${options.host}:${options.port}`,
+        options.strain_id,
+      )()
+      console.log(output)
+    } catch (error) {
+      console.log(error)
+    }
   })
 
 await program.parseAsync()
