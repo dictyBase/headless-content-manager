@@ -48,13 +48,13 @@ type handleBoldAndItalicProperties = {
   textContent: string
 }
 
-type convertJsonFilesToLexicalProperties = {
+type IterateJsonFilesAndSaveProperties = {
   files: Array<string>
   folder: string
   loadContentFn: LoadContentFnProperties
 }
 
-type persistContentProperties = {
+type PersistContentProperties = {
   createdBy: string
   content: string
   fileinfo: {
@@ -74,7 +74,7 @@ type LoadContentFnProperties = (
   props: LoadContentProperties,
 ) => TaskEither<Error, Content>
 
-type SlateToLexicalAndPersistProperties = {
+type PersistLexicalProperties = {
   jsonFilePath: string
   loadContentFn: LoadContentFnProperties
 }
@@ -87,9 +87,9 @@ export type {
   blockTypeProperties,
   ElementProperties,
   handleBoldAndItalicProperties,
-  convertJsonFilesToLexicalProperties,
-  persistContentProperties,
+  IterateJsonFilesAndSaveProperties,
+  PersistContentProperties,
   LoadContentProperties,
   LoadContentFnProperties,
-  SlateToLexicalAndPersistProperties,
+  PersistLexicalProperties,
 }
