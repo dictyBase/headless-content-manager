@@ -12,6 +12,10 @@ const stockClient = (url: string) => {
   return createPromiseClient(StockService, transport)
 }
 
+const fetchStrainById =
+  (client: PromiseClient<typeof StockService>) => (id: string) =>
+    tryCatch(() => client.getStrain({ id }), toError)
+
 const contentClient = (url: string) => {
   const transport = createGrpcTransport({ baseUrl: url, httpVersion: "2" })
   return createPromiseClient(ContentService, transport)
@@ -47,4 +51,5 @@ export {
   infoLogger,
   warnLogger,
   stockClient,
+  fetchStrainById,
 }
