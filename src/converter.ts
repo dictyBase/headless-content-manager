@@ -5,7 +5,7 @@ import { JSDOM } from "jsdom"
 import { extractContent, curriedBlockToElements } from "./extract"
 import { syncEditor, editorInstance } from "./editor"
 import { join, parse, type ParsedPath } from "path"
-import { readdir } from "node:fs/promises"
+import { readdir, writeFile } from "node:fs/promises"
 
 const curriedAddBlockElement =
   (document: Document) => (elem: ElementTypeProperties | null) =>
@@ -30,7 +30,7 @@ const convertSlateToLexicalAndWrite =
   (output: string) => async (jsonFilePath: string) => {
     const json = await slateToLexical(jsonFilePath)
     const parsedFile = parse(jsonFilePath)
-    await Bun.write(join(output, `${parsedFile.name}.json`), json)
+    await writeFile(join(output, `${parsedFile.name}.json`), json)
   }
 
 const parseFileName = ({ parsedFile }: { parsedFile: ParsedPath }) => {
@@ -76,7 +76,7 @@ const batchSlateToHtml = async (input: string, output: string) => {
   const allContents = await Promise.all(await allHtmls(input))
   allContents.map(async ({ html, file }) => {
     const parsedFile = parse(file)
-    await Bun.write(join(output, `${parsedFile.name}.html`), html)
+    await writeFile(join(output, `${parsedFile.name}.html`), html)
   })
 }
 

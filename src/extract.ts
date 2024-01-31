@@ -14,6 +14,7 @@ import {
   processChildNode,
   elementWithContent,
 } from "./handlers"
+import { readFile } from "node:fs/promises"
 
 /**
  * Extracts content from a file.
@@ -21,8 +22,8 @@ import {
 const extractContent = async (
   file: string,
 ): Promise<Array<ElementProperties>> => {
-  const fh = Bun.file(file)
-  return await fh.json()
+  const content = await readFile(file)
+  return JSON.parse(content)
 }
 
 /**
