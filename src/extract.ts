@@ -23,7 +23,7 @@ const extractContent = async (
   file: string,
 ): Promise<Array<ElementProperties>> => {
   const content = await readFile(file)
-  return JSON.parse(content)
+  return JSON.parse(content.toString())
 }
 
 /**
