@@ -5,7 +5,8 @@
   "devDependencies": {
     "@types/bun": "latest",
     "@types/jsdom": "^21.1.6",
-    "prettier": "^3.1.1"
+    "prettier": "^3.1.1",
+    "tsx": "^4.7.0"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
@@ -24,8 +25,7 @@
     "fp-ts-std": "^0.18.0",
     "jsdom": "^23.2.0",
     "lexical": "0.11",
-    "ts-pattern": "^5.0.6",
-    "tsx": "^4.7.0"
+    "ts-pattern": "^5.0.6"
   },
   "prettier": {
     "semi": false,
