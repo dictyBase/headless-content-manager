@@ -97,7 +97,7 @@ program
   .action(async (options) => {
     try {
       const output = await strainFetcher(
-        `${options.host}:${options.port}`,
+        `http://${options.host}:${options.port}`,
         options.strain_id,
       )()
       console.log(output)
