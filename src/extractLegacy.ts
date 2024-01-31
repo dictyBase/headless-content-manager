@@ -1,4 +1,3 @@
-import { join as Ajoin } from "fp-ts-std/Array"
 import { match } from "ts-pattern"
 
 type marksProperties = {
@@ -70,31 +69,34 @@ const extractBlockNodes = (
   content: contentProperties,
 ): Array<blockProperties> => content.document.nodes
 
-const curriedBlockNodesToElement = (document: Document) => (node: blockProperties) => {
-  if (!BLOCK_TYPES[node.type]) {
-    console.warn(node.type, " not found")
-    return
-  }
-  const elementFn = BLOCK_TYPES[node.type]
-  if (node.nodes.length == 0) {
-    return
-  }
-  const element = elementFn(document)
-  if (node.type === "unordered-list" || node.type === "ordered-list") {
-    node.nodes.forEach((n) => {
-      if (n) {
-        const liElement = curriedBlockNodesToElement(document)(n as blockProperties)
-        element.appendChild(liElement as HTMLLIElement)
-      }
-    })
+const curriedBlockNodesToElement =
+  (document: Document) => (node: blockProperties) => {
+    if (!BLOCK_TYPES[node.type]) {
+      console.warn(node.type, " not found")
+      return
+    }
+    const elementFn = BLOCK_TYPES[node.type]
+    if (node.nodes.length == 0) {
+      return
+    }
+    const element = elementFn(document)
+    if (node.type === "unordered-list" || node.type === "ordered-list") {
+      node.nodes.forEach((n) => {
+        if (n) {
+          const liElement = curriedBlockNodesToElement(document)(
+            n as blockProperties,
+          )
+          element.appendChild(liElement as HTMLLIElement)
+        }
+      })
+      return element
+    }
+    const texts = node.nodes
+      .map((n) => extractNodeContent(n as textObjectProperties))
+      .join(" ")
+    element.insertAdjacentHTML("afterbegin", texts)
     return element
   }
-  const texts = node.nodes
-    .map((n) => extractNodeContent(n as textObjectProperties))
-    .join(" ")
-  element.insertAdjacentHTML("afterbegin", texts)
-  return element
-}
 
 const extractNodeContent = (node: textObjectProperties) => {
   if (node.object != "text") {
@@ -123,11 +125,7 @@ const addMarksToContent = (content: string, marks: Array<marksProperties>) => {
   return content
 }
 
-
-const spaceSep = Ajoin(" ")
-
 export {
-  spaceSep,
   extractContent,
   curriedBlockNodesToElement,
   extractBlockNodes,
