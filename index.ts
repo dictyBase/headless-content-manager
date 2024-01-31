@@ -83,7 +83,7 @@ program
 program
   .command("strain-info")
   .description("retrieve strain information from stock grpc service")
-  .requiredOption("-i, --strain-id <identifier>", "strain identifier or DBS id")
+  .requiredOption("-i, --id <identifier>", "strain identifier or DBS id")
   .addOption(
     new Option("-a, --host <address>", "host address of stock grpc service")
       .default("stock-api")
@@ -98,7 +98,7 @@ program
     try {
       const output = await strainFetcher(
         `http://${options.host}:${options.port}`,
-        options.strain_id,
+        options.id,
       )()
       console.log(output)
     } catch (error) {
