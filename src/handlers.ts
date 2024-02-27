@@ -65,7 +65,9 @@ const anchorElement = (
   element: HTMLAnchorElement,
 ) => {
   const content = node.children.at(0)?.text
-  content && (element.href = content)
+  const url = node.url
+  content && (element.textContent = content)
+  url && (element.href = url)
 }
 
 /**
