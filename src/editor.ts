@@ -9,6 +9,7 @@ import { createHeadlessEditor } from "@lexical/headless"
 import { LinkNode } from "@lexical/link"
 import { ListNode, ListItemNode } from "@lexical/list"
 import { HeadingNode } from "@lexical/rich-text"
+import { ImageNode } from "./ImageNode"
 
 /**
  * Synchronizes the editor with the provided document.
@@ -29,7 +30,7 @@ const syncEditor = (document: Document, editor: LexicalEditor) => {
     () => {
       // Generate nodes from the DOM
       const nodes = $generateNodesFromDOM(editor, document)
-
+      
       // Filter and transform nodes if they are of type "text"
       const validNodesToInsert = nodes.map((node) => {
         if (node.getType() === "text") {
@@ -59,7 +60,7 @@ const syncEditor = (document: Document, editor: LexicalEditor) => {
 const editorInstance = () =>
   createHeadlessEditor({
     onError: console.error,
-    nodes: [LinkNode, ListItemNode, ListNode, HeadingNode],
+    nodes: [LinkNode, ListItemNode, ListNode, HeadingNode, ImageNode],
   })
 
 const generateHtml = (content: string) => `<!DOCTYPE html><p>${content}</p>`
