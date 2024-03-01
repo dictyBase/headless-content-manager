@@ -8,6 +8,7 @@ import { $generateNodesFromDOM } from "@lexical/html"
 import { createHeadlessEditor } from "@lexical/headless"
 import { LinkNode } from "@lexical/link"
 import { ListNode, ListItemNode } from "@lexical/list"
+import { TableNode, TableRowNode, TableCellNode } from "@lexical/table"
 import { HeadingNode } from "@lexical/rich-text"
 import { ImageNode } from "./ImageNode"
 
@@ -30,7 +31,7 @@ const syncEditor = (document: Document, editor: LexicalEditor) => {
     () => {
       // Generate nodes from the DOM
       const nodes = $generateNodesFromDOM(editor, document)
-      
+
       // Filter and transform nodes if they are of type "text"
       const validNodesToInsert = nodes.map((node) => {
         if (node.getType() === "text") {
@@ -60,7 +61,16 @@ const syncEditor = (document: Document, editor: LexicalEditor) => {
 const editorInstance = () =>
   createHeadlessEditor({
     onError: console.error,
-    nodes: [LinkNode, ListItemNode, ListNode, HeadingNode, ImageNode],
+    nodes: [
+      LinkNode,
+      ListItemNode,
+      ListNode,
+      HeadingNode,
+      ImageNode,
+      TableNode,
+      TableRowNode,
+      TableCellNode,
+    ],
   })
 
 const generateHtml = (content: string) => `<!DOCTYPE html><p>${content}</p>`
