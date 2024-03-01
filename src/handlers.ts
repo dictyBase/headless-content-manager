@@ -34,12 +34,7 @@ const BLOCK_TYPES: blockTypeProperties = {
  */
 const elementFromType = (document: Document, nodeType: string) =>
   match(nodeType in BLOCK_TYPES)
-    .with(true, () => {
-      console.log("nodeType found: ", nodeType)
-      const d = BLOCK_TYPES[nodeType](document)
-      // console.log("document: ", new XMLSerializer().serializeToString(document))
-      return d
-    })
+    .with(true, () => BLOCK_TYPES[nodeType](document))
     .otherwise(() => null)
 
 /**
