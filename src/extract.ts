@@ -12,7 +12,6 @@ import {
   anchorElement,
   elementFromType,
   processChildNode,
-  elementWithContent,
 } from "./handlers"
 import { readFile } from "node:fs/promises"
 
@@ -67,7 +66,7 @@ const curriedBlockToElements =
       // and return the "element".
       .with({ element: P.not(P.nullish) }, ({ node, element }) => {
         allOtherElements(document, node, element)
-        return elementWithContent(element)
+        return element
       })
       // For any other case, return the "element" directly.
       .otherwise(({ element }) => element)
