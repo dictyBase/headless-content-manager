@@ -2,6 +2,7 @@ import { match, P } from "ts-pattern"
 import type {
   ChildrenProperties,
   LeafElementProperties,
+  ImageElementProperties,
   ElementTypeProperties,
   blockTypeProperties,
   handleBoldAndItalicProperties,
@@ -76,8 +77,14 @@ const anchorElement = (
 /**
  * Sets the src property of an HTMLImageElement to the URL specified in the node.
  */
-const imageElement = (node: LeafElementProperties, element: HTMLImageElement) =>
-  (element.src = node.url as string)
+const imageElement = (
+  node: ImageElementProperties,
+  element: HTMLImageElement,
+) => {
+  element.height = Number(node.height as string)
+  element.width = Number(node.width as string)
+  element.src = node.url as string
+}
 
 /**
  * Extracts the content of a node.
