@@ -15,6 +15,7 @@ const blockTypesTestCases = Object.keys(BLOCK_TYPES).map((blockType) => {
     blockType: blockType,
     expectedTag: match(blockType)
       .with("paragraph", () => "p")
+      .with("lineSpacing", () => "div")
       .with("center", () => "p")
       .with("link", () => "a")
       .with("image", () => "img")
@@ -22,6 +23,9 @@ const blockTypesTestCases = Object.keys(BLOCK_TYPES).map((blockType) => {
       .with("orderedList", () => "ol")
       .with("unorderedList", () => "ul")
       .with("divider", () => "hr")
+      .with("tableWrap", () => "table")
+      .with("tableRow", () => "tr")
+      .with("tableCell", () => "td")
       .otherwise((blockType) => blockType),
   }
 })

@@ -2,6 +2,7 @@ import { match, P } from "ts-pattern"
 import type {
   ChildrenProperties,
   LeafElementProperties,
+  ImageElementProperties,
   ElementTypeProperties,
   blockTypeProperties,
   handleBoldAndItalicProperties,
@@ -12,6 +13,7 @@ const newlineRgxp = new RegExp(/\n/)
 const BLOCK_TYPES: blockTypeProperties = {
   divider: (document: Document) => document.createElement("hr"),
   div: (document: Document) => document.createElement("div"),
+  lineSpacing: (document: Document) => document.createElement("div"),
   h1: (document: Document) => document.createElement("h1"),
   h2: (document: Document) => document.createElement("h2"),
   h3: (document: Document) => document.createElement("h3"),
@@ -24,6 +26,9 @@ const BLOCK_TYPES: blockTypeProperties = {
   image: (document: Document) => document.createElement("img"),
   link: (document: Document) => document.createElement("a"),
   br: (document: Document) => document.createElement("br"),
+  tableWrap: (document: Document) => document.createElement("table"),
+  tableRow: (document: Document) => document.createElement("tr"),
+  tableCell: (document: Document) => document.createElement("td"),
 }
 
 /**
@@ -73,8 +78,14 @@ const anchorElement = (
 /**
  * Sets the src property of an HTMLImageElement to the URL specified in the node.
  */
-const imageElement = (node: LeafElementProperties, element: HTMLImageElement) =>
-  (element.src = node.url as string)
+const imageElement = (
+  node: ImageElementProperties,
+  element: HTMLImageElement,
+) => {
+  element.height = Number(node.height as string)
+  element.width = Number(node.width as string)
+  element.src = node.url as string
+}
 
 /**
  * Extracts the content of a node.

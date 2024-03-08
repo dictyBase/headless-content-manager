@@ -150,6 +150,7 @@ describe("curriedBlockToElements", () => {
     const href = "http://example.com/"
     const node = {
       type: "link",
+      url: href,
       children: [
         {
           text: href,

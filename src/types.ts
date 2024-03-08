@@ -17,6 +17,11 @@ type LeafElementProperties = {
   url?: string
 }
 
+interface ImageElementProperties extends LeafElementProperties {
+  height: string
+  width: string
+}
+
 type ElementProperties = {
   type: string
   children: Array<LeafElementProperties>
@@ -82,6 +87,7 @@ type PersistLexicalProperties = {
 export type {
   ChildrenProperties,
   LeafElementProperties,
+  ImageElementProperties,
   ElementTypeProperties,
   blockProperties,
   blockTypeProperties,
