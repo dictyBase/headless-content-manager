@@ -22,6 +22,9 @@ const blockTypesTestCases = Object.keys(BLOCK_TYPES).map((blockType) => {
       .with("orderedList", () => "ol")
       .with("unorderedList", () => "ul")
       .with("divider", () => "hr")
+      .with("tableWrap", () => "table")
+      .with("tableRow", () => "tr")
+      .with("tableCell", () => "td")
       .otherwise((blockType) => blockType),
   }
 })
