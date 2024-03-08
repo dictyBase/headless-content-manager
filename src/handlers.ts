@@ -13,6 +13,7 @@ const newlineRgxp = new RegExp(/\n/)
 const BLOCK_TYPES: blockTypeProperties = {
   divider: (document: Document) => document.createElement("hr"),
   div: (document: Document) => document.createElement("div"),
+  lineSpacing: (document: Document) => document.createElement("div"),
   h1: (document: Document) => document.createElement("h1"),
   h2: (document: Document) => document.createElement("h2"),
   h3: (document: Document) => document.createElement("h3"),
