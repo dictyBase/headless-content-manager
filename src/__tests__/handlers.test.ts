@@ -15,6 +15,7 @@ const blockTypesTestCases = Object.keys(BLOCK_TYPES).map((blockType) => {
     blockType: blockType,
     expectedTag: match(blockType)
       .with("paragraph", () => "p")
+      .with("lineSpacing", () => "div")
       .with("center", () => "p")
       .with("link", () => "a")
       .with("image", () => "img")
