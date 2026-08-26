@@ -1,64 +1,86 @@
 /* eslint-disable class-methods-use-this */
-import { DecoratorNode, type EditorConfig, type Spread, type SerializedLexicalNode } from "lexical";
+import {
+  DecoratorNode,
+  type EditorConfig,
+  type Spread,
+  type SerializedLexicalNode,
+} from "lexical"
 
 type SerializedImageNode = Spread<
   {
-    source: string;
-    width: number;
-    height: number;
-    alt?: string | undefined;
-    type: "image";
+    source: string
+    width: number
+    height: number
+    alt?: string | undefined
+    type: "image"
   },
   SerializedLexicalNode
->;
+>
 
 type ImageNodeConstructorProperties = {
-  source: string;
-  width: number;
-  height: number;
-  alt?: string | undefined;
-  key?: string;
-};
+  source: string
+  width: number
+  height: number
+  alt?: string | undefined
+  key?: string
+}
 
 class ImageNode extends DecoratorNode<any> {
-  __source;
+  __source
 
-  __alt;
+  __alt
 
-  __height;
+  __height
 
-  __width;
+  __width
 
   static override getType() {
-    return "image";
+    return "image"
   }
 
   static override clone(node: ImageNode) {
-    const { __source: source, __alt: alt, __key: key, __width: width, __height: height } = node;
+    const {
+      __source: source,
+      __alt: alt,
+      __key: key,
+      __width: width,
+      __height: height,
+    } = node
     return new ImageNode({
       source,
       alt,
       key,
       width,
       height,
-    });
+    })
   }
 
-  static override importJSON({ source, alt, width, height }: SerializedImageNode): ImageNode {
+  static override importJSON({
+    source,
+    alt,
+    width,
+    height,
+  }: SerializedImageNode): ImageNode {
     return new ImageNode({
       source,
       alt,
       width,
       height,
-    });
+    })
   }
 
-  constructor({ source, width, height, alt, key }: ImageNodeConstructorProperties) {
-    super(key);
-    this.__source = source;
-    this.__height = height;
-    this.__width = width;
-    this.__alt = alt;
+  constructor({
+    source,
+    width,
+    height,
+    alt,
+    key,
+  }: ImageNodeConstructorProperties) {
+    super(key)
+    this.__source = source
+    this.__height = height
+    this.__width = width
+    this.__alt = alt
   }
 
   // static importDOM() {
@@ -73,17 +95,17 @@ class ImageNode extends DecoratorNode<any> {
   // }
 
   override createDOM(config: EditorConfig) {
-    const div = document.createElement("div");
-    const { theme } = config;
-    const className = theme.image;
+    const div = document.createElement("div")
+    const { theme } = config
+    const className = theme.image
     if (className) {
-      div.className = className;
+      div.className = className
     }
-    return div;
+    return div
   }
 
   override updateDOM() {
-    return false;
+    return false
   }
 
   override exportJSON(): SerializedImageNode {
@@ -94,12 +116,12 @@ class ImageNode extends DecoratorNode<any> {
       height: this.__height,
       alt: this.__alt,
       version: 1,
-    };
+    }
   }
 
   override decorate() {
-    return null;
+    return null
   }
 }
 
-export { type SerializedImageNode, ImageNode };
+export { type SerializedImageNode, ImageNode }
