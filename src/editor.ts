@@ -8,9 +8,11 @@ import { $generateNodesFromDOM } from "@lexical/html"
 import { createHeadlessEditor } from "@lexical/headless"
 import { LinkNode } from "@lexical/link"
 import { ListNode, ListItemNode } from "@lexical/list"
-import { TableNode, TableRowNode, TableCellNode } from "@lexical/table"
+import { TableRowNode, TableCellNode } from "@lexical/table"
 import { HeadingNode } from "@lexical/rich-text"
-import { ImageNode } from "./ImageNode"
+import { ImageNode } from "./nodes/ImageNode"
+import { FlexLayoutNode } from "./nodes/FlexLayoutNode"
+import { WidthTableNode } from "./nodes/WidthTableNode"
 
 /**
  * Synchronizes the editor with the provided document.
@@ -67,9 +69,10 @@ const editorInstance = () =>
       ListNode,
       HeadingNode,
       ImageNode,
-      TableNode,
+      WidthTableNode,
       TableRowNode,
       TableCellNode,
+      FlexLayoutNode,
     ],
   })
 
