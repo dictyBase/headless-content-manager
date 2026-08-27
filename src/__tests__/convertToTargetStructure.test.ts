@@ -42,7 +42,11 @@ describe("convertToTargetStructure", () => {
       root: {
         type: "root",
         children: [
-          { type: "heading", tag: "h1", children: [{ type: "text", text: "A" }] },
+          {
+            type: "heading",
+            tag: "h1",
+            children: [{ type: "text", text: "A" }],
+          },
           {
             type: "flex-layout",
             children: [
@@ -50,7 +54,15 @@ describe("convertToTargetStructure", () => {
               {
                 type: "flex-layout",
                 children: [
-                  { type: "list", children: [{ type: "listitem", children: [{ type: "text", text: "C" }] }] },
+                  {
+                    type: "list",
+                    children: [
+                      {
+                        type: "listitem",
+                        children: [{ type: "text", text: "C" }],
+                      },
+                    ],
+                  },
                 ],
               },
             ],
