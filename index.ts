@@ -10,6 +10,7 @@ import {
   batchSlateToLexical,
 } from "./src/converter"
 import { strainFetcher } from "./src/retriever"
+import { fetchAndSaveByNamespace } from "./src/graphql"
 
 const program = new Command()
 
@@ -103,6 +104,35 @@ program
       console.log(output)
     } catch (error) {
       console.log(error)
+    }
+  })
+
+program
+  .command("fetch-by-namespace")
+  .description(
+    "fetch all content by namespace from GraphQL and save to input dir",
+  )
+  .requiredOption("-n, --namespace <namespace>", "content namespace")
+  .addOption(
+    new Option("-g, --graphql <url>", "GraphQL endpoint URL")
+      .default("https://graphql.dictybase.dev/graphql")
+      .env("GRAPHQL_ENDPOINT"),
+  )
+  .addOption(
+    new Option("-o, --output <dir>", "output directory").default(
+      "src/data/input",
+    ),
+  )
+  .action(async (options) => {
+    try {
+      const items = await fetchAndSaveByNamespace(
+        options.graphql,
+        options.namespace,
+        options.output,
+      )
+      console.log(`Saved ${items.length} content items to ${options.output}`)
+    } catch (error) {
+      console.error(error)
     }
   })
 
