@@ -166,7 +166,13 @@ function extractBlocks(nodes: LexicalNode[]): LexicalNode[] {
       continue
     }
 
-    // Any other block type (image-node, etc.) — keep as-is
+    // Image/image-node — leaf block node, no children needed
+    if (node.type === "image" || node.type === "image-node") {
+      result.push(cloneNode(node))
+      continue
+    }
+
+    // Any other block type — keep as-is
     if (!hasTextualContent(node.children)) continue
     result.push(node)
   }
