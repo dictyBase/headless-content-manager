@@ -1,3 +1,6 @@
+import { readdir, readFile, writeFile } from "node:fs/promises"
+import { join, parse } from "path"
+
 type LexicalNode = {
   type: string
   children?: Array<LexicalNode>
@@ -6,6 +9,12 @@ type LexicalNode = {
 
 type LexicalRoot = {
   root: LexicalNode
+}
+
+type ContentItem = {
+  content: string
+  slug?: string
+  [key: string]: unknown
 }
 
 /** Node types considered "inline" (can be children of paragraph/heading/listitem). */
@@ -203,3 +212,38 @@ export function convertToTargetStructure(root: LexicalRoot): LexicalRoot {
     },
   }
 }
+
+/**
+ * Reads a content item file (GraphQL output shape), parses the serialized
+ * `content` string into a lexical root, and converts it to the target
+ * structure.
+ */
+const convertContentItem = async (filePath: string) => {
+  const raw = await readFile(filePath)
+  const item = JSON.parse(raw.toString()) as ContentItem
+  const lexicalRoot = JSON.parse(item.content) as LexicalRoot
+  return {
+    slug: item.slug,
+    converted: convertToTargetStructure(lexicalRoot),
+  }
+}
+
+/**
+ * Converts every `.json` content item in `input` to the target structure and
+ * writes the result to `output` as `{slug}-converted.json` (or
+ * `{basename}-converted.json` when no slug is present).
+ */
+const convertAllToTargetStructure = async (input: string, output: string) => {
+  const files = (await readdir(input)).filter((f) => f.endsWith(".json"))
+  for (const file of files) {
+    const inputPath = join(input, file)
+    const { slug, converted } = await convertContentItem(inputPath)
+    const basename = parse(file).name
+    await writeFile(
+      join(output, `${slug ?? basename}-converted.json`),
+      JSON.stringify(converted, null, 2),
+    )
+  }
+}
+
+export { convertAllToTargetStructure }
