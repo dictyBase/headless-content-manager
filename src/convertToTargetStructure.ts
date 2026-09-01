@@ -1,4 +1,5 @@
 import { readdir, readFile, writeFile } from "node:fs/promises"
+import type { Content, UpdateContentInput } from "dicty-graphql-schema"
 import { join, parse } from "path"
 
 type LexicalNode = {
@@ -224,13 +225,17 @@ export function convertToTargetStructure(root: LexicalRoot): LexicalRoot {
  * `content` string into a lexical root, and converts it to the target
  * structure.
  */
-const convertContentItem = async (filePath: string) => {
+const convertContentItem = async (
+  filePath: string,
+): Promise<UpdateContentInput & { slug: string }> => {
   const raw = await readFile(filePath)
-  const item = JSON.parse(raw.toString()) as ContentItem
+  const item = JSON.parse(raw.toString()) as Content
   const lexicalRoot = JSON.parse(item.content) as LexicalRoot
   return {
+    content: JSON.stringify(convertToTargetStructure(lexicalRoot)),
+    id: item.id,
+    updated_by: item.updated_by.email,
     slug: item.slug,
-    converted: convertToTargetStructure(lexicalRoot),
   }
 }
 
@@ -243,11 +248,11 @@ const convertAllToTargetStructure = async (input: string, output: string) => {
   const files = (await readdir(input)).filter((f) => f.endsWith(".json"))
   for (const file of files) {
     const inputPath = join(input, file)
-    const { slug, converted } = await convertContentItem(inputPath)
+    const result = await convertContentItem(inputPath)
     const basename = parse(file).name
     await writeFile(
-      join(output, `${slug ?? basename}-converted.json`),
-      JSON.stringify(converted, null, 2),
+      join(output, `${result.slug ?? basename}-converted.json`),
+      JSON.stringify(result, null, 2),
     )
   }
 }

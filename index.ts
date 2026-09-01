@@ -11,6 +11,7 @@ import {
 } from "./src/converter"
 import { strainFetcher } from "./src/retriever"
 import { fetchAndSaveByNamespace } from "./src/graphql"
+import { convertAllToTargetStructure } from "./src/convertToTargetStructure"
 
 const program = new Command()
 
@@ -131,6 +132,25 @@ program
         options.output,
       )
       console.log(`Saved ${items.length} content items to ${options.output}`)
+    } catch (error) {
+      console.error(error)
+    }
+  })
+
+program
+  .command("prepare-migration")
+  .description(
+    "convert content items to UpdateContentInput JSON for migration",
+  )
+  .requiredOption("-i, --input <dir>", "input directory with content JSON files")
+  .requiredOption(
+    "-o, --output <dir>",
+    "output directory for converted migration files",
+  )
+  .action(async (options) => {
+    try {
+      await convertAllToTargetStructure(options.input, options.output)
+      console.log(`Migration documents written to ${options.output}`)
     } catch (error) {
       console.error(error)
     }
