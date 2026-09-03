@@ -1,5 +1,18 @@
 import { readdir, readFile, writeFile } from "node:fs/promises"
 import type { Content, UpdateContentInput } from "dicty-graphql-schema"
+import { pipe, flow } from "fp-ts/function"
+import {
+  Semigroup as SSemigroup,
+  Eq as SEq,
+  split as Ssplit,
+} from "fp-ts/string"
+import { lookup as Mlookup } from "fp-ts/Map"
+import { getOrElse as OgetOrElse } from "fp-ts/Option"
+import {
+  head as RNEAhead,
+  modifyHead as RNEAmodifyHead,
+  intercalate as RNEAintercalate,
+} from "fp-ts/ReadonlyNonEmptyArray"
 import { join, parse } from "path"
 
 type LexicalNode = {
@@ -17,6 +30,12 @@ type ContentItem = {
   slug?: string
   [key: string]: unknown
 }
+
+const namespaceMap = new Map([
+  ["frontpage", "dfp"],
+  ["stockcenter", "dsc"],
+  ["news", "news"],
+])
 
 /** Node types considered "inline" (can be children of paragraph/heading/listitem). */
 const INLINE_TYPES = new Set(["text", "link", "download-link", "linebreak"])
@@ -239,6 +258,20 @@ const convertContentItem = async (
   }
 }
 
+const mapSlugToOutputName = (slug: string) => {
+  return pipe(
+    slug,
+    Ssplit("-"),
+    RNEAmodifyHead((namespace) =>
+      pipe(
+        namespaceMap,
+        Mlookup(SEq)(namespace),
+        OgetOrElse(() => "dfp"),
+      ),
+    ),
+    RNEAintercalate(SSemigroup)("-"),
+  )
+}
 /**
  * Converts every `.json` content item in `input` to the target structure and
  * writes the result to `output` as `{slug}-converted.json` (or
@@ -249,10 +282,9 @@ const convertAllToTargetStructure = async (input: string, output: string) => {
   for (const file of files) {
     const inputPath = join(input, file)
     const result = await convertContentItem(inputPath)
-    const basename = parse(file).name
     await writeFile(
-      join(output, `${result.slug ?? basename}-converted.json`),
-      JSON.stringify(result, null, 2),
+      join(output, `${mapSlugToOutputName(result.slug)}.json`),
+      result.content,
     )
   }
 }
