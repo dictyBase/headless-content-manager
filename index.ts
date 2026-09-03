@@ -120,18 +120,24 @@ program
       .env("GRAPHQL_ENDPOINT"),
   )
   .addOption(
+    new Option("-l, --limit <number>", "maximum number of items to fetch")
+      .default("10")
+      .env("GRAPHQL_ENDPOINT"),
+  )
+  .addOption(
     new Option("-o, --output <dir>", "output directory").default(
       "src/data/input",
     ),
   )
-  .action(async (options) => {
+  .action(async ({ graphql, namespace, limit, output }) => {
     try {
       const items = await fetchAndSaveByNamespace(
-        options.graphql,
-        options.namespace,
-        options.output,
+        graphql,
+        namespace,
+        limit,
+        output,
       )
-      console.log(`Saved ${items.length} content items to ${options.output}`)
+      console.log(`Saved ${items.length} content items to ${output}`)
     } catch (error) {
       console.error(error)
     }
@@ -139,10 +145,11 @@ program
 
 program
   .command("prepare-migration")
-  .description(
-    "convert content items to UpdateContentInput JSON for migration",
+  .description("convert content items to UpdateContentInput JSON for migration")
+  .requiredOption(
+    "-i, --input <dir>",
+    "input directory with content JSON files",
   )
-  .requiredOption("-i, --input <dir>", "input directory with content JSON files")
   .requiredOption(
     "-o, --output <dir>",
     "output directory for converted migration files",

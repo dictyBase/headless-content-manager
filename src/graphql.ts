@@ -2,29 +2,31 @@ import { writeFile } from "node:fs/promises"
 import { join } from "path"
 
 const LIST_BY_NAMESPACE_QUERY = `
-  query ListContentByNamespace($namespace: String!) {
-    listContentByNamespace(namespace: $namespace) {
+query ListContentByNamespace($namespace: String!, $limit: Int) {
+  listContentByNamespace(namespace: $namespace, limit: $limit) {
+    id
+    content
+    name
+    slug
+    created_at
+    updated_at
+    created_by {
       id
-      content
-      name
-      slug
-      created_at
-      updated_at
-      created_by {
-        id
-        email
-        first_name
-        last_name
-      }
-      updated_by {
-        id
-        email
-        first_name
-        last_name
-      }
+      email
+      first_name
+      last_name
+      __typename
     }
+    updated_by {
+      id
+      email
+      first_name
+      last_name
+      __typename
+    }
+    __typename
   }
-`
+}`
 
 type ContentItem = {
   id: string
@@ -50,6 +52,7 @@ type ContentItem = {
 const fetchAndSaveByNamespace = async (
   endpoint: string,
   namespace: string,
+  limit: number,
   outputDir: string,
 ) => {
   const res = await fetch(endpoint, {
@@ -57,7 +60,7 @@ const fetchAndSaveByNamespace = async (
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       query: LIST_BY_NAMESPACE_QUERY,
-      variables: { namespace },
+      variables: { namespace, limit },
     }),
   })
   if (!res.ok) throw new Error(`GraphQL error: ${res.status} ${res.statusText}`)
@@ -77,4 +80,3 @@ const fetchAndSaveByNamespace = async (
 
 export { fetchAndSaveByNamespace }
 export type { ContentItem }
-
