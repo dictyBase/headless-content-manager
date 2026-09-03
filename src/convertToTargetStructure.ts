@@ -1,4 +1,4 @@
-import { readdir, readFile, writeFile } from "node:fs/promises"
+import { readdir, readFile, writeFile, mkdir } from "node:fs/promises"
 import type { Content, UpdateContentInput } from "dicty-graphql-schema"
 import { pipe, flow } from "fp-ts/function"
 import {
@@ -278,6 +278,7 @@ const mapSlugToOutputName = (slug: string) => {
  * `{basename}-converted.json` when no slug is present).
  */
 const convertAllToTargetStructure = async (input: string, output: string) => {
+  await mkdir(output, { recursive: true })
   const files = (await readdir(input)).filter((f) => f.endsWith(".json"))
   for (const file of files) {
     const inputPath = join(input, file)
