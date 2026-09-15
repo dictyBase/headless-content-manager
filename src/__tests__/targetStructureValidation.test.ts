@@ -21,11 +21,13 @@ const ALLOWED_TYPES = new Set([
   "listitem",
   "image",
   "link",
+  "download-link",
   "quote",
   "text",
   "table",
   "tablecell",
   "tablerow",
+  "linebreak",
 ])
 
 const BLOCK_TYPES = new Set([
@@ -37,7 +39,7 @@ const BLOCK_TYPES = new Set([
   "table",
 ])
 
-const INLINE_TYPES = new Set(["text", "link"])
+const INLINE_TYPES = new Set(["text", "link", "download-link", "linebreak"])
 
 const validParentFor = (childType: string, parentType: string) => {
   switch (parentType) {
@@ -52,6 +54,7 @@ const validParentFor = (childType: string, parentType: string) => {
     case "list":
       return childType === "listitem"
     case "listitem":
+      return INLINE_TYPES.has(childType) || childType === "list"
     case "link":
       return INLINE_TYPES.has(childType)
     case "download-link":

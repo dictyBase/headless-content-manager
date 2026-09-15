@@ -74,9 +74,6 @@ function cloneNode(
  * linebreak → text with "\n"), recursing into nested inline nodes.
  */
 function mapInline(node: LexicalNode): LexicalNode {
-  if (node.type === "linebreak") {
-    return cloneNode(node, { type: "text", text: "\n" })
-  }
   if (node.children) {
     return { ...node, children: node.children.map(mapInline) }
   }

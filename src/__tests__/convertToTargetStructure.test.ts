@@ -243,32 +243,6 @@ describe("convertToTargetStructure", () => {
     expect(flexContainer.children![0].children![0].text).toBe("Real content")
   })
 
-  test("maps linebreak to text with newline", () => {
-    const input = {
-      root: {
-        type: "root",
-        children: [
-          {
-            type: "paragraph",
-            children: [
-              { type: "linebreak", version: 1 },
-              { type: "text", text: "after" },
-            ],
-          },
-        ],
-      },
-    }
-
-    const output = convertToTargetStructure(input)
-    const paragraph = output.root.children![0].children![0]
-
-    expect(paragraph.type).toBe("paragraph")
-    expect(paragraph.children).toHaveLength(2)
-    expect(paragraph.children![0].type).toBe("text")
-    expect(paragraph.children![0].text).toBe("\n")
-    expect(paragraph.children![1].text).toBe("after")
-  })
-
   test("preserves links inside listitems", () => {
     const input = {
       root: {
