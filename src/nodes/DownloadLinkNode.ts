@@ -76,7 +76,7 @@ class DownloadLinkNode extends LinkNode {
   }
 
   override createDOM(config: EditorConfig) {
-    const element = super.createDOM(config)
+    const element = super.createDOM(config) as HTMLAnchorElement
     pipe(
       this.__download,
       OfromNullable,
@@ -92,7 +92,7 @@ class DownloadLinkNode extends LinkNode {
   }
 
   override updateDOM(
-    previousNode: DownloadLinkNode,
+    previousNode: this,
     anchor: HTMLAnchorElement,
     config: EditorConfig,
   ) {

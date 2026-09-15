@@ -30,7 +30,7 @@ const slateToLexical = async (input: string) => {
     Amap(blockNodesToElement),
     Amap(addBlockElement),
   )
-  syncEditor(contEditor)(document)
+  syncEditor(document, contEditor)
   return JSON.stringify(contEditor.getEditorState(), null, 2)
 }
 

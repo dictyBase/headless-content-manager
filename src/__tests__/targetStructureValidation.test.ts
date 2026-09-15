@@ -19,18 +19,22 @@ const ALLOWED_TYPES = new Set([
   "heading",
   "list",
   "listitem",
-  "image-node",
+  "image",
   "link",
   "quote",
   "text",
+  "table",
+  "tablecell",
+  "tablerow",
 ])
 
 const BLOCK_TYPES = new Set([
   "paragraph",
   "heading",
   "list",
-  "image-node",
+  "image",
   "quote",
+  "table",
 ])
 
 const INLINE_TYPES = new Set(["text", "link"])
@@ -50,9 +54,17 @@ const validParentFor = (childType: string, parentType: string) => {
     case "listitem":
     case "link":
       return INLINE_TYPES.has(childType)
+    case "download-link":
+      return INLINE_TYPES.has(childType)
     case "text":
-    case "image-node":
+    case "image":
       return false // leaf nodes
+    case "table":
+      return childType === "tablerow"
+    case "tablerow":
+      return childType === "tablecell"
+    case "tablecell":
+      return BLOCK_TYPES.has(childType)
     default:
       return false
   }
@@ -67,9 +79,7 @@ const validateStructure = (root: LexicalNode, fileName: string) => {
     }
 
     if (parentType && !validParentFor(node.type, parentType)) {
-      errors.push(
-        `${fileName}: "${parentType}" cannot contain "${node.type}"`,
-      )
+      errors.push(`${fileName}: "${parentType}" cannot contain "${node.type}"`)
     }
 
     for (const child of node.children ?? []) {
@@ -85,9 +95,7 @@ const validateStructure = (root: LexicalNode, fileName: string) => {
 const outputDir = join(import.meta.dirname, "..", "data", "output")
 
 describe("output files match target structure", async () => {
-  const files = (await readdir(outputDir)).filter((f) =>
-    f.endsWith(".json"),
-  )
+  const files = (await readdir(outputDir)).filter((f) => f.endsWith(".json"))
 
   for (const file of files) {
     test(file, async () => {
@@ -101,3 +109,4 @@ describe("output files match target structure", async () => {
     })
   }
 })
+

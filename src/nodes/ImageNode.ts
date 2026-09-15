@@ -1,12 +1,11 @@
 /* eslint-disable class-methods-use-this */
 import {
   DecoratorNode,
-  EditorConfig,
-  Spread,
-  SerializedLexicalNode,
-  LexicalNode,
+  type EditorConfig,
+  type Spread,
+  type SerializedLexicalNode,
+  type LexicalNode,
 } from "lexical"
-import { ImageStateWrapper } from "./ImageStateWrapper"
 
 enum ALIGNMENT {
   LEFT,
