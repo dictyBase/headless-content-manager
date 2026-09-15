@@ -1,6 +1,6 @@
 import { readdir, readFile, writeFile, mkdir } from "node:fs/promises"
 import type { Content, UpdateContentInput } from "dicty-graphql-schema"
-import { pipe, flow } from "fp-ts/function"
+import { pipe } from "fp-ts/function"
 import {
   Semigroup as SSemigroup,
   Eq as SEq,
@@ -9,11 +9,10 @@ import {
 import { lookup as Mlookup } from "fp-ts/Map"
 import { getOrElse as OgetOrElse } from "fp-ts/Option"
 import {
-  head as RNEAhead,
   modifyHead as RNEAmodifyHead,
   intercalate as RNEAintercalate,
 } from "fp-ts/ReadonlyNonEmptyArray"
-import { join, parse } from "path"
+import { join } from "path"
 
 type LexicalNode = {
   type: string
@@ -23,12 +22,6 @@ type LexicalNode = {
 
 type LexicalRoot = {
   root: LexicalNode
-}
-
-type ContentItem = {
-  content: string
-  slug?: string
-  [key: string]: unknown
 }
 
 const namespaceMap = new Map([
@@ -81,12 +74,6 @@ function cloneNode(
  * linebreak → text with "\n"), recursing into nested inline nodes.
  */
 function mapInline(node: LexicalNode): LexicalNode {
-  if (node.type === "download-link") {
-    return {
-      ...cloneNode(node, { type: "link" }),
-      children: (node.children ?? []).map(mapInline),
-    }
-  }
   if (node.type === "linebreak") {
     return cloneNode(node, { type: "text", text: "\n" })
   }
