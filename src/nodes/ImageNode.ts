@@ -4,7 +4,14 @@ import {
   type EditorConfig,
   type Spread,
   type SerializedLexicalNode,
+  type LexicalNode,
 } from "lexical"
+
+enum ALIGNMENT {
+  LEFT,
+  CENTER,
+  RIGHT,
+}
 
 type SerializedImageNode = Spread<
   {
@@ -13,6 +20,7 @@ type SerializedImageNode = Spread<
     height: number
     alt?: string | undefined
     type: "image"
+    alignment: ALIGNMENT
   },
   SerializedLexicalNode
 >
@@ -23,9 +31,10 @@ type ImageNodeConstructorProperties = {
   height: number
   alt?: string | undefined
   key?: string
+  alignment: ALIGNMENT
 }
 
-class ImageNode extends DecoratorNode<any> {
+class ImageNode extends DecoratorNode<JSX.Element> {
   __source
 
   __alt
@@ -33,6 +42,8 @@ class ImageNode extends DecoratorNode<any> {
   __height
 
   __width
+
+  __alignment
 
   static override getType() {
     return "image"
@@ -45,6 +56,7 @@ class ImageNode extends DecoratorNode<any> {
       __key: key,
       __width: width,
       __height: height,
+      __alignment: alignment,
     } = node
     return new ImageNode({
       source,
@@ -52,6 +64,7 @@ class ImageNode extends DecoratorNode<any> {
       key,
       width,
       height,
+      alignment,
     })
   }
 
@@ -60,12 +73,14 @@ class ImageNode extends DecoratorNode<any> {
     alt,
     width,
     height,
+    alignment,
   }: SerializedImageNode): ImageNode {
     return new ImageNode({
       source,
       alt,
       width,
       height,
+      alignment,
     })
   }
 
@@ -75,24 +90,30 @@ class ImageNode extends DecoratorNode<any> {
     height,
     alt,
     key,
+    alignment,
   }: ImageNodeConstructorProperties) {
     super(key)
     this.__source = source
     this.__height = height
     this.__width = width
     this.__alt = alt
+    this.__alignment = alignment
   }
 
-  static importDOM() {
-    const conversionFunction = (image: HTMLImageElement) => {
-      return {
-        node: new ImageNode({ source: image.src, width: image.width, height: image.height, alt: image.alt})
-      }
-    }
-    return {
-      "img": (node: HTMLImageElement) => ({ conversion: conversionFunction, priority: 0}), 
-    }
+  override isInline() {
+    return false
   }
+
+  // static importDOM() {
+  //   const conversionFunction = (image: HTMLImageElement) => {
+  //     return {
+  //       node: new ImageNode({ source: image.src, width: image.width, height: image.height, alt: image.alt})
+  //     }
+  //   }
+  //   return {
+  //     "img": (node: HTMLImageElement) => ({ conversion: conversionFunction, priority: 0}),
+  //   }
+  // }
 
   override createDOM(config: EditorConfig) {
     const div = document.createElement("div")
@@ -115,6 +136,7 @@ class ImageNode extends DecoratorNode<any> {
       width: this.__width,
       height: this.__height,
       alt: this.__alt,
+      alignment: this.__alignment,
       version: 1,
     }
   }
@@ -124,4 +146,7 @@ class ImageNode extends DecoratorNode<any> {
   }
 }
 
-export { type SerializedImageNode, ImageNode }
+const $isImageNode = (node: LexicalNode): node is ImageNode =>
+  node.getType() === "image"
+
+export { type SerializedImageNode, ImageNode, $isImageNode, ALIGNMENT }

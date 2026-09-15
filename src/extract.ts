@@ -47,7 +47,10 @@ const curriedBlockToElements =
       // If the nodeType is "image", call the "imageElement" function with the
       // "node" and "element" as arguments, and return the "element".
       .with({ nodeType: "image" }, ({ node, element }) => {
-        imageElement(node as LeafElementProperties, element as HTMLImageElement)
+        imageElement(
+          node as LeafElementProperties & { height: string; width: string },
+          element as HTMLImageElement,
+        )
         return element
         // return elementWithContent(element as ElementTypeProperties)
       })

@@ -10,6 +10,8 @@ import {
   batchSlateToLexical,
 } from "./src/converter"
 import { strainFetcher } from "./src/retriever"
+import { fetchAndSaveByNamespace } from "./src/graphql"
+import { convertAllToTargetStructure } from "./src/convertToTargetStructure"
 
 const program = new Command()
 
@@ -103,6 +105,61 @@ program
       console.log(output)
     } catch (error) {
       console.log(error)
+    }
+  })
+
+program
+  .command("fetch-by-namespace")
+  .description(
+    "fetch all content by namespace from GraphQL and save to input dir",
+  )
+  .requiredOption("-n, --namespace <namespace>", "content namespace")
+  .addOption(
+    new Option("-g, --graphql <url>", "GraphQL endpoint URL")
+      .default("https://graphql.dictybase.dev/graphql")
+      .env("GRAPHQL_ENDPOINT"),
+  )
+  .addOption(
+    new Option("-l, --limit <number>", "maximum number of items to fetch")
+      .default("10")
+      .env("GRAPHQL_ENDPOINT"),
+  )
+  .addOption(
+    new Option("-o, --output <dir>", "output directory").default(
+      "src/data/input",
+    ),
+  )
+  .action(async ({ graphql, namespace, limit, output }) => {
+    try {
+      const items = await fetchAndSaveByNamespace(
+        graphql,
+        namespace,
+        limit,
+        output,
+      )
+      console.log(`Saved ${items.length} content items to ${output}`)
+    } catch (error) {
+      console.error(error)
+    }
+  })
+
+program
+  .command("prepare-migration")
+  .description("convert content items to UpdateContentInput JSON for migration")
+  .requiredOption(
+    "-i, --input <dir>",
+    "input directory with content JSON files",
+  )
+  .requiredOption(
+    "-o, --output <dir>",
+    "output directory for converted migration files",
+  )
+  .action(async (options) => {
+    try {
+      await convertAllToTargetStructure(options.input, options.output)
+      console.log(`Migration documents written to ${options.output}`)
+    } catch (error) {
+      console.error(error)
     }
   })
 
